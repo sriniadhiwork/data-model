@@ -222,6 +222,36 @@ ALTER TABLE ONLY audit ALTER COLUMN id SET DEFAULT nextval('audit_id_seq'::regcl
 
 ALTER TABLE ONLY directory ALTER COLUMN id SET DEFAULT nextval('directory_id_seq'::regclass);
 
+CREATE TABLE address
+(
+  id bigserial NOT NULL,
+  street_line_1 character varying(250) NOT NULL,
+  street_line_2 character varying(250),
+  city character varying(250) NOT NULL,
+  state character varying(100) NOT NULL,
+  zipcode character varying(100) NOT NULL,
+  country character varying(250) NOT NULL,
+  creation_date timestamp without time zone NOT NULL DEFAULT now(),
+  last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT address_pk PRIMARY KEY (id)
+);
+
+
+CREATE TABLE patient (
+	id bigserial not null,
+	patient_id varchar(100) not null,
+	first_name varchar(100) not null,
+	last_name varchar(100) not null,
+	dob date without timezone,
+	ssn varchar(9),
+	gender varchar(10),
+	phone_number varchar(20),
+	address_id bigint,
+	last_modified_date timestamp without timezone default now() not null,
+	creation_date timestamp without timezone default now() not null,
+	CONSTRAINT patient_pk PRIMARY KEY (id),
+	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+);
 
 SET search_path = audit, pg_catalog;
 
