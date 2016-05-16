@@ -305,13 +305,13 @@ CREATE TABLE patient (
 	patient_id varchar(100) not null,
 	first_name varchar(100) not null,
 	last_name varchar(100) not null,
-	dob date without timezone,
+	dob date,
 	ssn varchar(9),
 	gender varchar(10),
 	phone_number varchar(20),
 	address_id bigint,
-	last_modified_date timestamp without timezone default now() not null,
-	creation_date timestamp without timezone default now() not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_pk PRIMARY KEY (id),
 	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
