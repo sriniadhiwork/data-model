@@ -202,36 +202,6 @@ SET search_path = audit, pg_catalog;
 -- Data for Name: logged_actions; Type: TABLE DATA; Schema: audit; Owner: pulse
 --
 
-COPY logged_actions (schema_name, table_name, user_name, action_tstamp, action, original_data, new_data, query) FROM stdin;
-pulse	organization	postgres	2016-05-04 16:22:50.731-04	I	\N	{"name":"OrganizationOne","last_modifed_date":"2016-05-04T16:22:50.731","creation_date":"2016-05-04T16:22:50.731","id":1}	INSERT into organization (name) VALUES ('OrganizationOne')
-pulse	organization	postgres	2016-05-04 16:22:50.834-04	I	\N	{"name":"OrganizationTwo","last_modifed_date":"2016-05-04T16:22:50.834","creation_date":"2016-05-04T16:22:50.834","id":2}	INSERT into organization (name) VALUES ('OrganizationTwo')
-pulse	organization	postgres	2016-05-04 16:22:50.834-04	I	\N	{"name":"OrganizationThree","last_modifed_date":"2016-05-04T16:22:50.834","creation_date":"2016-05-04T16:22:50.834","id":3}	INSERT into organization (name) VALUES ('OrganizationThree')
-\.
-
-
-SET search_path = pulse, pg_catalog;
-
---
--- TOC entry 2040 (class 0 OID 35923)
--- Dependencies: 175
--- Data for Name: audit; Type: TABLE DATA; Schema: pulse; Owner: pulse
---
-
-COPY audit (id, query, creation_date, querent, last_modified_date) FROM stdin;
-\.
-
---
--- TOC entry 2044 (class 0 OID 35960)
--- Dependencies: 179
--- Data for Name: organization; Type: TABLE DATA; Schema: pulse; Owner: pulse
---
-
-COPY organization (name, last_modifed_date, creation_date, id) FROM stdin;
-OrganizationOne	2016-05-04 16:22:50.731	2016-05-04 16:22:50.731	1
-OrganizationTwo	2016-05-04 16:22:50.834	2016-05-04 16:22:50.834	2
-OrganizationThree	2016-05-04 16:22:50.834	2016-05-04 16:22:50.834	3
-\.
-
 
 SET search_path = audit, pg_catalog;
 
