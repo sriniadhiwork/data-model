@@ -13,13 +13,21 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
+DROP DATABASE IF EXISTS pulse;
+
+CREATE DATABASE pulse
+  WITH OWNER = pulse
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       CONNECTION LIMIT = -1;
+
 --
 -- TOC entry 2051 (class 1262 OID 12135)
 -- Dependencies: 2050
 -- Name: postgres; Type: COMMENT; Schema: -; Owner: postgres
 --
 
-COMMENT ON DATABASE postgres IS 'default administrative connection database';
+COMMENT ON DATABASE pulse IS 'default administrative connection database';
 
 
 --
@@ -341,12 +349,6 @@ SET search_path = audit, pg_catalog;
 -- Data for Name: logged_actions; Type: TABLE DATA; Schema: audit; Owner: pulse
 --
 
-COPY logged_actions (schema_name, table_name, user_name, action_tstamp, action, original_data, new_data, query) FROM stdin;
-pulse	organization	postgres	2016-05-04 16:22:50.731-04	I	\N	{"name":"OrganizationOne","last_modifed_date":"2016-05-04T16:22:50.731","creation_date":"2016-05-04T16:22:50.731","id":1}	INSERT into organization (name) VALUES ('OrganizationOne')
-pulse	organization	postgres	2016-05-04 16:22:50.834-04	I	\N	{"name":"OrganizationTwo","last_modifed_date":"2016-05-04T16:22:50.834","creation_date":"2016-05-04T16:22:50.834","id":2}	INSERT into organization (name) VALUES ('OrganizationTwo')
-pulse	organization	postgres	2016-05-04 16:22:50.834-04	I	\N	{"name":"OrganizationThree","last_modifed_date":"2016-05-04T16:22:50.834","creation_date":"2016-05-04T16:22:50.834","id":3}	INSERT into organization (name) VALUES ('OrganizationThree')
-\.
-
 
 SET search_path = pulse, pg_catalog;
 
@@ -356,8 +358,6 @@ SET search_path = pulse, pg_catalog;
 -- Data for Name: audit; Type: TABLE DATA; Schema: pulse; Owner: pulse
 --
 
-COPY audit (id, query, creation_date, querent, last_modified_date) FROM stdin;
-\.
 
 
 --
@@ -375,8 +375,6 @@ SELECT pg_catalog.setval('audit_id_seq', 1, false);
 -- Data for Name: directory; Type: TABLE DATA; Schema: pulse; Owner: pulse
 --
 
-COPY directory (organization, id, last_modified_date, creation_date) FROM stdin;
-\.
 
 
 --
@@ -393,13 +391,6 @@ SELECT pg_catalog.setval('directory_id_seq', 1, false);
 -- Dependencies: 179
 -- Data for Name: organization; Type: TABLE DATA; Schema: pulse; Owner: pulse
 --
-
-COPY organization (name, last_modifed_date, creation_date, id) FROM stdin;
-OrganizationOne	2016-05-04 16:22:50.731	2016-05-04 16:22:50.731	1
-OrganizationTwo	2016-05-04 16:22:50.834	2016-05-04 16:22:50.834	2
-OrganizationThree	2016-05-04 16:22:50.834	2016-05-04 16:22:50.834	3
-\.
-
 
 --
 -- TOC entry 2063 (class 0 OID 0)
