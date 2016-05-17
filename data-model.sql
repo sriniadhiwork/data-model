@@ -13,14 +13,6 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-DROP DATABASE IF EXISTS pulse;
-
-CREATE DATABASE pulse
-  WITH OWNER = pulse
-       ENCODING = 'UTF8'
-       TABLESPACE = pg_default
-       CONNECTION LIMIT = -1;
-
 --
 -- TOC entry 2051 (class 1262 OID 12135)
 -- Dependencies: 2050
