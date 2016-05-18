@@ -155,7 +155,7 @@ ALTER TABLE audit OWNER TO pulse;
 CREATE TABLE organization (
 	id bigserial not null,
     name character varying(128) NOT NULL,
-    last_modifed_date timestamp without time zone DEFAULT now() NOT NULL,
+    last_modified_date timestamp without time zone DEFAULT now() NOT NULL,
     creation_date timestamp without time zone DEFAULT now() NOT NULL,
 	CONSTRAINT organization_pk PRIMARY KEY (id)
 );
@@ -186,13 +186,14 @@ CREATE TABLE patient (
 	gender varchar(10),
 	phone_number varchar(20),
 	address_id bigint,
+	organization_id bigint,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_pk PRIMARY KEY (id),
-	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 ALTER TABLE patient OWNER TO pulse;
-
 
 SET search_path = audit, pg_catalog;
 
