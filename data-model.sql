@@ -187,6 +187,7 @@ CREATE TABLE patient (
 	phone_number varchar(20),
 	address_id bigint,
 	organization_id bigint,
+	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_pk PRIMARY KEY (id),
@@ -194,6 +195,19 @@ CREATE TABLE patient (
 	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 ALTER TABLE patient OWNER TO pulse;
+
+CREATE TABLE document (
+	id bigserial not null,
+	name varchar(500) not null,
+	format varchar(100),
+	patient_id bigint not null,
+	last_read_date timestamp without time zone default now() not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT document_pk PRIMARY KEY (id),
+	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+);
+ALTER TABLE document OWNER TO pulse;
 
 SET search_path = audit, pg_catalog;
 
@@ -245,6 +259,8 @@ CREATE TRIGGER address_audit AFTER INSERT OR DELETE OR UPDATE ON address FOR EAC
 CREATE TRIGGER address_timestamp BEFORE UPDATE ON address FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_audit AFTER INSERT OR DELETE OR UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_timestamp BEFORE UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER document_audit AFTER INSERT OR DELETE OR UPDATE ON document FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER document_timestamp BEFORE UPDATE ON document FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 
 SET search_path = audit, pg_catalog;
 
