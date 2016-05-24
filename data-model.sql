@@ -182,7 +182,7 @@ CREATE TABLE patient (
 	first_name varchar(100) not null,
 	last_name varchar(100) not null,
 	dob date,
-	ssn varchar(9),
+	ssn varchar(15),
 	gender varchar(10),
 	phone_number varchar(20),
 	address_id bigint,
