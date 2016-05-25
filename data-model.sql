@@ -153,11 +153,16 @@ ALTER TABLE audit OWNER TO pulse;
 
 
 CREATE TABLE organization (
-	id bigserial not null,
-    name character varying(128) NOT NULL,
-    last_modified_date timestamp without time zone DEFAULT now() NOT NULL,
-    creation_date timestamp without time zone DEFAULT now() NOT NULL,
-	CONSTRAINT organization_pk PRIMARY KEY (id)
+	id bigserial NOT NULL,
+  	name character varying(128) NOT NULL,
+  	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+  	creation_date timestamp without time zone NOT NULL DEFAULT now(),
+  	is_active boolean NOT NULL,
+  	adapter character varying(128) NOT NULL,
+  	ip_address character varying(32),
+  	username character varying(64),
+  	certification_key character varying(128),
+  	CONSTRAINT organization_pk PRIMARY KEY (id)
 );
 ALTER TABLE organization OWNER TO pulse;
 
