@@ -154,6 +154,7 @@ ALTER TABLE audit OWNER TO pulse;
 
 CREATE TABLE organization (
 	id bigserial NOT NULL,
+	organization_id bigserial NOT NULL,
   	name character varying(128) NOT NULL,
   	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
   	creation_date timestamp without time zone NOT NULL DEFAULT now(),
