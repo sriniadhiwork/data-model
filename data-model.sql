@@ -161,7 +161,9 @@ CREATE TABLE organization (
   	adapter character varying(128) NOT NULL,
   	ip_address character varying(32),
   	username character varying(64),
+  	password character varying(64),
   	certification_key character varying(128),
+  	endpoint_url character varying(256),
   	CONSTRAINT organization_pk PRIMARY KEY (id)
 );
 ALTER TABLE organization OWNER TO pulse;
