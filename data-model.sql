@@ -154,6 +154,7 @@ ALTER TABLE audit OWNER TO pulse;
 
 CREATE TABLE organization (
 	id bigserial NOT NULL,
+	organization_id bigserial NOT NULL,
   	name character varying(128) NOT NULL,
   	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
   	creation_date timestamp without time zone NOT NULL DEFAULT now(),
@@ -161,7 +162,9 @@ CREATE TABLE organization (
   	adapter character varying(128) NOT NULL,
   	ip_address character varying(32),
   	username character varying(64),
+  	password character varying(64),
   	certification_key character varying(128),
+  	endpoint_url character varying(256),
   	CONSTRAINT organization_pk PRIMARY KEY (id)
 );
 ALTER TABLE organization OWNER TO pulse;
@@ -183,7 +186,8 @@ ALTER TABLE address OWNER TO pulse;
 
 CREATE TABLE patient (
 	id bigserial not null,
-	patient_id varchar(100) not null,
+	patient_id varchar(1024) not null,
+	organization_patient_id varchar(1024) not null,
 	first_name varchar(100) not null,
 	last_name varchar(100) not null,
 	dob date,
