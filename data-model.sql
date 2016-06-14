@@ -238,6 +238,7 @@ CREATE TABLE query_organization (
 	start_date timestamp without time zone default now() not null,
 	end_date timestamp without time zone,
 	from_cache boolean,
+	success boolean,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT query_organization_pk PRIMARY KEY (id),
