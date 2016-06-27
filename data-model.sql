@@ -144,6 +144,7 @@ SET search_path = pulse, pg_catalog;
 CREATE TABLE audit (
     id bigserial NOT NULL,
     query character varying(1024) NOT NULL,
+    query_type character varying(64) NOT NULL,
     creation_date timestamp without time zone DEFAULT now() NOT NULL,
     querent character varying(128) NOT NULL,
     last_modified_date timestamp without time zone DEFAULT now() NOT NULL,
