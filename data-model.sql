@@ -188,10 +188,12 @@ ALTER TABLE address OWNER TO pulse;
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
 	name varchar(500) not null,
+	address_id bigint,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT alternate_care_facility_pk PRIMARY KEY (id)
+	CONSTRAINT alternate_care_facility_pk PRIMARY KEY (id),
+	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE patient (
