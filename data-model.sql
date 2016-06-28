@@ -143,6 +143,7 @@ SET search_path = pulse, pg_catalog;
 
 CREATE TABLE audit (
     id bigserial NOT NULL,
+	subject varchar(100) NOT NULL, -- patient search, document search, document cache, document retreival
     query character varying(1024) NOT NULL,
     creation_date timestamp without time zone DEFAULT now() NOT NULL,
     querent character varying(128) NOT NULL,
@@ -184,6 +185,17 @@ CREATE TABLE address
 );
 ALTER TABLE address OWNER TO pulse;
 
+CREATE TABLE alternate_care_facility (
+	id bigserial not null,
+	name varchar(500) not null,
+	address_id bigint,
+	last_read_date timestamp without time zone default now() not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT alternate_care_facility_pk PRIMARY KEY (id),
+	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 CREATE TABLE patient (
 	id bigserial not null,
 	patient_id varchar(1024) not null,
@@ -196,12 +208,14 @@ CREATE TABLE patient (
 	phone_number varchar(20),
 	address_id bigint,
 	organization_id bigint,
+	alternate_care_facility_id bigint,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_pk PRIMARY KEY (id),
 	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE,
-	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT acf_fk FOREIGN KEY (alternate_care_facility_id) REFERENCES alternate_care_facility (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 ALTER TABLE patient OWNER TO pulse;
 
@@ -317,6 +331,8 @@ CREATE TRIGGER query_organization_audit AFTER INSERT OR DELETE OR UPDATE ON quer
 CREATE TRIGGER query_organization_timestamp BEFORE UPDATE ON query_organization FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_query_audit AFTER INSERT OR DELETE OR UPDATE ON patient_query FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_query_timestamp BEFORE UPDATE ON patient_query FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER alternate_care_facility_audit AFTER INSERT OR DELETE OR UPDATE ON alternate_care_facility FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER alternate_care_facility_timestamp BEFORE UPDATE ON alternate_care_facility FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 
 SET search_path = audit, pg_catalog;
 
