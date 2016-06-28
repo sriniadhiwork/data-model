@@ -248,7 +248,6 @@ CREATE TABLE query_organization (
 	status varchar(25) not null, --active or complete
 	start_date timestamp without time zone default now() not null,
 	end_date timestamp without time zone,
-	from_cache boolean,
 	success boolean,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
