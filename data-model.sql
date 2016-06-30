@@ -215,17 +215,33 @@ CREATE TABLE patient (
 );
 ALTER TABLE patient OWNER TO pulse;
 
+CREATE TABLE patient_organization_map (
+	id bigserial not null,
+	patient_id bigint not null,
+	organization_id bigint not null,
+	organization_patient_id varchar(1024) not null,
+	documents_query_status varchar(25) not null, --active or complete
+	documents_query_success boolean not null, -- was it successfully retrieved
+	documents_query_start timestamp without time zone default now() not null,
+	documents_query_end timestamp without time zone,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
+	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE document (
 	id bigserial not null,
+	patient_organization_map_id bigint not null,
 	name varchar(500) not null,
 	format varchar(100),
-	patient_id bigint not null,
 	contents bytea,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT document_pk PRIMARY KEY (id),
-	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT patient_organization_map_fk FOREIGN KEY (patient_organization_map_id) REFERENCES patient_organization_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE document OWNER TO pulse;
 
@@ -330,6 +346,8 @@ CREATE TRIGGER address_audit AFTER INSERT OR DELETE OR UPDATE ON address FOR EAC
 CREATE TRIGGER address_timestamp BEFORE UPDATE ON address FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_audit AFTER INSERT OR DELETE OR UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_timestamp BEFORE UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER patient_organization_map_audit AFTER INSERT OR DELETE OR UPDATE ON patient_organization_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER patient_organization_map_timestamp BEFORE UPDATE ON patient_organization_map FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER document_audit AFTER INSERT OR DELETE OR UPDATE ON document FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER document_timestamp BEFORE UPDATE ON document FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER query_audit AFTER INSERT OR DELETE OR UPDATE ON query FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
