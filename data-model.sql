@@ -170,15 +170,17 @@ CREATE TABLE organization (
 );
 ALTER TABLE organization OWNER TO pulse;
 
+--allow more lenient null fields in address since
+--in a crisis you may only know some parts of it
 CREATE TABLE address
 (
   id bigserial NOT NULL,
-  street_line_1 character varying(250) NOT NULL,
+  street_line_1 character varying(250),
   street_line_2 character varying(250),
-  city character varying(250) NOT NULL,
-  state character varying(100) NOT NULL,
-  zipcode character varying(100) NOT NULL,
-  country character varying(250) NOT NULL,
+  city character varying(250),
+  state character varying(100),
+  zipcode character varying(100),
+  country character varying(250),
   creation_date timestamp without time zone NOT NULL DEFAULT now(),
   last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
   CONSTRAINT address_pk PRIMARY KEY (id)
@@ -188,11 +190,13 @@ ALTER TABLE address OWNER TO pulse;
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
 	name varchar(500) not null,
+	phone_number varchar(50),
 	address_id bigint,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT alternate_care_facility_pk PRIMARY KEY (id),
+	CONSTRAINT name_key UNIQUE (name),
 	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
