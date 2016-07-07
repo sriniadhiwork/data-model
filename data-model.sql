@@ -1,3 +1,4 @@
+
 --
 -- PostgreSQL database dump
 --
@@ -143,7 +144,7 @@ SET search_path = pulse, pg_catalog;
 
 CREATE TABLE audit (
     id bigserial NOT NULL,
-	subject varchar(100) NOT NULL, -- patient search, document search, document cache, document retreival
+	query_type varchar(100) NOT NULL, -- patient search, document search, document cache, document retreival
     query character varying(1024) NOT NULL,
     creation_date timestamp without time zone DEFAULT now() NOT NULL,
     querent character varying(128) NOT NULL,
