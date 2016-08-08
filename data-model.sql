@@ -203,8 +203,8 @@ CREATE TABLE alternate_care_facility (
 
 CREATE TABLE patient (
 	id bigserial not null,
-	first_name varchar(100) not null,
-	last_name varchar(100) not null,
+	given_name varchar(100) not null,
+	family_name varchar(100) not null,
 	dob date,
 	ssn varchar(15),
 	gender varchar(10),
@@ -281,8 +281,8 @@ ALTER TABLE query_organization OWNER to pulse;
 CREATE TABLE patient_record (
 	id bigserial not null,
 	organization_patient_id varchar(1024) not null,
-	first_name varchar(100) not null,
-	last_name varchar(100) not null,
+	given_name varchar(100) not null,
+	family_name varchar(100) not null,
 	dob date,
 	ssn varchar(15),
 	gender varchar(10),
