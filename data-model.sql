@@ -153,6 +153,130 @@ CREATE TABLE audit (
 );
 ALTER TABLE audit OWNER TO pulse;
 
+-- ATNA Audit Tables
+-- based on p277 of this document
+-- http://www.ihe.net/uploadedFiles/Documents/ITI/IHE_ITI_TF_Vol2b.pdf
+
+CREATE TABLE audit_request_source (
+	id bigserial NOT NULL,
+	user_id varchar(50),
+	alternative_user_id varchar(100), --the process ID as used within the local operating system in the local system logs
+	user_name varchar(100),
+	user_is_requestor boolean default true,
+	role_id_code varchar(100), -- EV(110153, DCM, “Source”)
+	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	network_access_point_id varchar(255), --the machine name or IP address.
+	CONSTRAINT audit_request_source_pk PRIMARY KEY (id)
+);
+ALTER TABLE audit_request_source OWNER TO pulse;
+
+CREATE TABLE audit_human_requestor (
+	id bigserial NOT NULL,
+	user_id varchar(50),
+	alternative_user_id varchar(100),
+	user_name varchar(100),
+	user_is_requestor boolean default true,
+	role_id_code varchar(100),
+	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	network_access_point_id varchar(255), --the machine name or IP address.
+	CONSTRAINT audit_human_requestor_pk PRIMARY KEY (id)
+);
+ALTER TABLE audit_human_requestor OWNER TO pulse;
+
+CREATE TABLE audit_request_destination (
+	id bigserial NOT NULL,
+	user_id varchar(50), --SOAP endpoint URI
+	alternative_user_id varchar(100),
+	user_name varchar(100),
+	user_is_requestor boolean default false,
+	role_id_code varchar(100), -- EV(110152, DCM, “Destination”)
+	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	network_access_point_id varchar(255), --the machine name or IP address.
+	CONSTRAINT audit_request_destination_pk PRIMARY KEY (id)
+);
+ALTER TABLE audit_request_destination OWNER TO pulse;
+
+CREATE TABLE audit_source (
+	id bigserial not null,
+	audit_source_id varchar(100),
+	audit_enterprise_site_id varchar(100),
+	audit_source_type_code varchar(100),
+	CONSTRAINT audit_source_id PRIMARY KEY (id)
+);
+ALTER TABLE audit_source OWNER TO pulse;
+
+CREATE TABLE audit_patient (
+	id bigserial not null,
+	participant_object_type_code smallint NOT NULL, -- “1” (Person)
+	participant_object_type_code_role smallint NOT NULL, -- “1” (Patient)
+	participant_object_data_lifecycle varchar(100),
+	participant_object_id_type_code varchar(100),
+	participant_object_sensitivity varchar(100),
+	participant_object_id varchar(100), -- The patient ID in HL7 CX format (see ITI TF-2x: appendix E).
+	participant_object_name varchar(250),
+	participant_object_query varchar(250),
+	participant_object_detail varchar(500),
+	CONSTRAINT audit_patient_pk PRIMARY KEY (id)
+);
+ALTER TABLE audit_patient OWNER TO pulse;
+
+CREATE TABLE audit_query_parameters (
+	id bigserial not null,
+	participant_object_type_code smallint NOT NULL, -- “2” (system object)
+	participant_object_type_code_role smallint NOT NULL, -- “24” (query)
+	participant_object_data_lifecycle varchar(100),
+	participant_object_id_type_code varchar(100), --  EV(“ITI-47”, “IHE Transactions”, “Patient Demographics Query”)
+	participant_object_sensitivity varchar(100),
+	participant_object_id varchar(100), 
+	participant_object_name varchar(250),
+	participant_object_query varchar(250), -- the QueryByParameter segment of the query, base64 encoded
+	participant_object_detail varchar(500),
+	CONSTRAINT audit_query_parameters_pk PRIMARY KEY (id)
+);
+ALTER TABLE audit_query_parameters OWNER TO pulse;
+
+
+CREATE TABLE audit_event (
+	id bigserial NOT NULL,
+	event_id varchar(100),
+	event_action_code varchar(5),
+	event_date_time timestamp without time zone DEFAULT now(),
+	event_outcome_indicator varchar(25),
+	event_type_code varchar(100),
+	audit_request_source_id bigint, --required for CONSUMER
+	audit_request_destination_id bigint, --required for SUPPLIER
+	audit_source_id bigint, --required for CONSUMER
+	audit_query_parameters_id bigint, -- required
+	CONSTRAINT audit_event_pk PRIMARY KEY (id),
+	CONSTRAINT audit_request_source_fk FOREIGN KEY (audit_request_source_id) REFERENCES audit_request_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_request_destination_fk FOREIGN KEY (audit_request_destination_id) REFERENCES audit_request_destination (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_source_fk FOREIGN KEY (audit_source_id) REFERENCES audit_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_query_parameters_fk FOREIGN KEY (audit_query_parameters_id) REFERENCES audit_query_parameters (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE audit_event OWNER TO pulse;
+
+CREATE TABLE audit_event_human_requestor_map ( -- can have 0 to many per audit event
+	audit_event_id bigint NOT NULL,
+	audit_human_requestor_id bigint NOT NULL,
+	CONSTRAINT audit_event_human_requestor_map_pk UNIQUE (audit_event_id, audit_human_requestor_id),
+	CONSTRAINT audit_event_fk FOREIGN KEY (audit_event_id) REFERENCES audit_event (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_human_requestor_fk FOREIGN KEY (audit_human_requestor_id) REFERENCES audit_human_requestor (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE audit_event_human_requestor_map OWNER TO pulse;
+
+
+CREATE TABLE audit_event_patient_map ( -- can have 0 to many per audit event
+	audit_event_id bigint NOT NULL,
+	audit_patient_id bigint NOT NULL,
+	CONSTRAINT audit_event_patient_map_pk UNIQUE (audit_event_id, audit_patient_id),
+	CONSTRAINT audit_event_fk FOREIGN KEY (audit_event_id) REFERENCES audit_event (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_patient_fk FOREIGN KEY (audit_patient_id) REFERENCES audit_patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE audit_event_patient_map OWNER TO pulse;
+
+--
+-- END Audit Tables
+--
 
 CREATE TABLE organization (
 	id bigserial NOT NULL,
