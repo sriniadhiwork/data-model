@@ -333,6 +333,30 @@ CREATE TABLE given_name (
 );
 ALTER TABLE given_name OWNER TO pulse;
 
+CREATE TABLE name_type (
+	id bigserial not null,
+	code varchar(1),
+	description varchar(100),
+	CONSTRAINT name_type_pk PRIMARY KEY (id)
+);
+ALTER TABLE name_type OWNER TO pulse;
+
+CREATE TABLE name_representation (
+	id bigserial not null,
+	code varchar(1),
+	description varchar(100),
+	CONSTRAINT name_representation_pk PRIMARY KEY (id)
+);
+ALTER TABLE name_representation OWNER TO pulse;
+
+CREATE TABLE name_assembly (
+	id bigserial not null,
+	code varchar(1),
+	description varchar(100),
+	CONSTRAINT name_assembly_pk PRIMARY KEY (id)
+);
+ALTER TABLE name_assembly OWNER TO pulse;
+
 CREATE TABLE patient_name (
 	id bigserial not null,
 	given_name_id bigint,
@@ -340,12 +364,6 @@ CREATE TABLE patient_name (
 	suffix varchar(30),
 	prefix varchar(30),
 	prof_suffix varchar(30),
-	name_type_code varchar(1) not null,
-	name_type_code_description varchar(50),
-	name_representation_code varchar(1),
-	name_representation_code_description varchar(50),
-	name_assembly_order_code varchar(1),
-	name_assembly_oder_code_description varchar(50),
 	effective_date date,
 	expiration_date date,
 	last_read_date timestamp without time zone default now() not null,
