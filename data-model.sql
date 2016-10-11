@@ -328,14 +328,12 @@ CREATE TABLE alternate_care_facility (
 CREATE TABLE given_name (
 	id bigserial not null,
 	name varchar(100),
-	patient_name_id bigint,
 	CONSTRAINT given_name_pk PRIMARY KEY (id)
 );
 ALTER TABLE given_name OWNER TO pulse;
 
 CREATE TABLE patient_name (
 	id bigserial not null,
-	given_name_id bigint,
 	family_name varchar(200) not null,
 	suffix varchar(30),
 	prefix varchar(30),
@@ -351,14 +349,12 @@ CREATE TABLE patient_name (
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT patient_name_pk PRIMARY KEY (id),
-	CONSTRAINT given_name_fk FOREIGN KEY (given_name_id) REFERENCES given_name (id) MATCH FULL ON DELETE SET NULL ON UPDATE CASCADE
+	CONSTRAINT patient_name_pk PRIMARY KEY (id)
 );
 ALTER TABLE patient_name OWNER TO pulse;
 
 CREATE TABLE patient (
 	id bigserial not null,
-	patient_name_id bigint,
 	dob date,
 	ssn varchar(15),
 	gender varchar(10),
@@ -370,8 +366,7 @@ CREATE TABLE patient (
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_pk PRIMARY KEY (id),
 	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE SET NULL ON UPDATE CASCADE,
-	CONSTRAINT acf_fk FOREIGN KEY (alternate_care_facility_id) REFERENCES alternate_care_facility (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT patient_name_fk FOREIGN KEY (patient_name_id) REFERENCES patient_name (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT acf_fk FOREIGN KEY (alternate_care_facility_id) REFERENCES alternate_care_facility (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE patient OWNER TO pulse;
 
