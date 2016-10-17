@@ -316,15 +316,31 @@ CREATE TABLE alternate_care_facility (
 	id bigserial not null,
 	name varchar(500) not null,
 	phone_number varchar(50),
-	address_id bigint,
+	city character varying(250),
+	state character varying(100),
+	zipcode character varying(100),
+	country character varying(250),
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT alternate_care_facility_pk PRIMARY KEY (id),
-	CONSTRAINT name_key UNIQUE (name),
-	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT name_key UNIQUE (name)
 );
 
+CREATE TABLE alternate_care_facility_address_line (
+	id bigserial not null,
+	alternate_care_facility_id bigint not null,
+	line varchar(128) not null,
+	line_order int not null default 1,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT alternate_care_facility_address_linke_pk PRIMARY KEY (id),
+	CONSTRAINT line_key UNIQUE (alternate_care_facility_id, line),
+	CONSTRAINT alternate_care_facility_fk FOREIGN KEY (alternate_care_facility_id) 
+		REFERENCES alternate_care_facility (id) 
+		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE		
+);
+		
 CREATE TABLE patient (
 	id bigserial not null,
 	given_name varchar(100) not null,
@@ -495,6 +511,8 @@ CREATE TRIGGER patient_record_audit AFTER INSERT OR DELETE OR UPDATE ON patient_
 CREATE TRIGGER patient_record_timestamp BEFORE UPDATE ON patient_record FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER alternate_care_facility_audit AFTER INSERT OR DELETE OR UPDATE ON alternate_care_facility FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER alternate_care_facility_timestamp BEFORE UPDATE ON alternate_care_facility FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER alternate_care_facility_address_line_audit AFTER INSERT OR DELETE OR UPDATE ON alternate_care_facility_address_line FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER alternate_care_facility_address_line_timestamp BEFORE UPDATE ON alternate_care_facility_address_line FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 
 SET search_path = audit, pg_catalog;
 
