@@ -381,43 +381,7 @@ CREATE TABLE patient (
 );
 ALTER TABLE patient OWNER TO pulse;
 
-CREATE TABLE patient_organization_map (
-	id bigserial not null,
-	patient_id bigint not null,
-	organization_id bigint not null,
-	organization_patient_id varchar(1024) not null,
-	documents_query_status varchar(25) not null, --active or complete
-	documents_query_success boolean, -- was it successfully retrieved
-	documents_query_start timestamp without time zone default now() not null,
-	documents_query_end timestamp without time zone,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
-	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
-);
 
-CREATE TABLE document (
-	id bigserial not null,
-	patient_organization_map_id bigint not null,
-	name varchar(500) not null,
-	format varchar(100),
-	contents bytea,
-	class_name varchar(150),
-	confidentiality varchar(150),
-	description varchar(500),
-	size varchar(10),
-	doc_creation_time varchar(100),
-	home_community_id varchar(100),
-	repository_unique_id varchar(100),
-	document_unique_id varchar(100),
-	last_read_date timestamp without time zone default now() not null,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT document_pk PRIMARY KEY (id),
-	CONSTRAINT patient_organization_map_fk FOREIGN KEY (patient_organization_map_id) REFERENCES patient_organization_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
-);
-ALTER TABLE document OWNER TO pulse;
 
 CREATE TABLE query (
 	id bigserial not null,
@@ -449,7 +413,7 @@ ALTER TABLE query_organization OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
-	organization_patient_id varchar(1024) not null,
+	organization_patient_record_id varchar(1024) not null,
 	dob date,
 	ssn varchar(15),
 	gender varchar(10),
@@ -467,6 +431,43 @@ CREATE TABLE patient_record (
 	CONSTRAINT query_organization_fk FOREIGN KEY (query_organization_id) REFERENCES query_organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE patient_record OWNER TO pulse;
+
+CREATE TABLE patient_organization_map (
+	id bigserial not null,
+	patient_record_id bigint not null,
+	organization_id bigint not null,
+	organization_patient_record_id varchar(1024) not null,
+	documents_query_status varchar(25) not null, --active or complete
+	documents_query_success boolean, -- was it successfully retrieved
+	documents_query_start timestamp without time zone default now() not null,
+	documents_query_end timestamp without time zone,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
+	CONSTRAINT patient_record_fk FOREIGN KEY (patient_record_id) REFERENCES patient_record (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE document (
+	id bigserial not null,
+	patient_organization_map_id bigint not null,
+	name varchar(500) not null,
+	format varchar(100),
+	contents bytea,
+	class_name varchar(150),
+	confidentiality varchar(150),
+	description varchar(500),
+	size varchar(10),
+	doc_creation_time varchar(100),
+	home_community_id varchar(100),
+	repository_unique_id varchar(100),
+	document_unique_id varchar(100),
+	last_read_date timestamp without time zone default now() not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT document_pk PRIMARY KEY (id),
+	CONSTRAINT patient_organization_map_fk FOREIGN KEY (patient_organization_map_id) REFERENCES patient_organization_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE document OWNER TO pulse;
 
 CREATE TABLE patient_record_name (
 	id bigserial not null,
