@@ -416,7 +416,6 @@ ALTER TABLE query_organization OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
-	organization_patient_record_id varchar(1024) not null,
 	dob date,
 	ssn varchar(15),
 	gender varchar(10),
@@ -437,9 +436,9 @@ ALTER TABLE patient_record OWNER TO pulse;
 
 CREATE TABLE patient_organization_map (
 	id bigserial not null,
-	patient_record_id bigint not null,
+	patient_id bigint not null,
 	organization_id bigint not null,
-	organization_patient_record_id varchar(1024) not null,
+	organization_patient_id varchar(1024) not null,
 	documents_query_status varchar(25) not null, --active or complete
 	documents_query_success boolean, -- was it successfully retrieved
 	documents_query_start timestamp without time zone default now() not null,
@@ -447,7 +446,7 @@ CREATE TABLE patient_organization_map (
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
-	CONSTRAINT patient_record_fk FOREIGN KEY (patient_record_id) REFERENCES patient_record (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE document (
