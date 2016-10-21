@@ -340,7 +340,16 @@ CREATE TABLE alternate_care_facility_address_line (
 		REFERENCES alternate_care_facility (id) 
 		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE		
 );
-		
+	
+CREATE TABLE query_organization_status (
+	id bigserial not null,
+	status varchar(30) not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT query_organization_status_pk PRIMARY KEY (id)
+);
+ALTER TABLE query_organization_status OWNER to pulse;
+	
 CREATE TABLE patient (
 	id bigserial not null,
 	given_name varchar(100) not null,
@@ -365,15 +374,16 @@ CREATE TABLE patient_organization_map (
 	patient_id bigint not null,
 	organization_id bigint not null,
 	organization_patient_id varchar(1024) not null,
-	documents_query_status varchar(25) not null, --active or complete
-	documents_query_success boolean, -- was it successfully retrieved
+	documents_query_status_id bigint not null, 
 	documents_query_start timestamp without time zone default now() not null,
 	documents_query_end timestamp without time zone,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
 	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT documents_query_status_fk FOREIGN KEY (documents_query_status_id) REFERENCES	
+		query_organization_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE document (
@@ -409,15 +419,6 @@ CREATE TABLE query (
 	CONSTRAINT query_pk PRIMARY KEY (id)
 );
 ALTER TABLE query OWNER to pulse;
-
-CREATE TABLE query_organization_status (
-	id bigserial not null,
-	status varchar(30) not null,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT query_organization_status_pk PRIMARY KEY (id)
-);
-ALTER TABLE query_organization_status OWNER to pulse;
 
 CREATE TABLE query_organization (
 	id bigserial not null,
