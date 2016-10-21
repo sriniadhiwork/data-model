@@ -298,33 +298,6 @@ ALTER TABLE organization OWNER TO pulse;
 --allow more lenient null fields in address since
 --in a crisis you may only know some parts of it
 
-CREATE TABLE patient_address
-(
-  id bigserial NOT NULL,
-  city character varying(250),
-  state character varying(100),
-  zipcode character varying(100),
-  creation_date timestamp without time zone NOT NULL DEFAULT now(),
-  last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
-  CONSTRAINT patient_address_pk PRIMARY KEY (id)
-);
-ALTER TABLE patient_address OWNER TO pulse;
-
-CREATE TABLE patient_address_line (
-	id bigserial not null,
-	patient_address_id bigint not null,
-	line varchar(128) not null,
-	line_order int not null default 1,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT patient_address_line_pk PRIMARY KEY (id),
-	CONSTRAINT patient_address_line_key UNIQUE (patient_address_id, line),
-	CONSTRAINT patient_address_fk FOREIGN KEY (patient_address_id) 
-		REFERENCES patient_address (id) 
-		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE		
-);
-ALTER TABLE patient_address_line OWNER TO pulse;
-
 CREATE TABLE patient_record_address(
   id bigserial NOT NULL,
   city character varying(250),
