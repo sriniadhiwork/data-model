@@ -419,6 +419,7 @@ CREATE TABLE patient_record (
 	dob date,
 	ssn varchar(15),
 	gender varchar(10),
+	organization_patient_record_id varchar(1024),
 	phone_number varchar(100),
 	street_line_1 character varying(250),
 	street_line_2 character varying(250),
