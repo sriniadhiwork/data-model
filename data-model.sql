@@ -384,7 +384,13 @@ CREATE TABLE patient (
 );
 ALTER TABLE patient OWNER TO pulse;
 
-
+CREATE TABLE patient_gender (
+	id bigserial not null,
+	code varchar(2) not null,
+	description varchar(100),
+	CONSTRAINT patient_gender_pk PRIMARY KEY (id)
+);
+ALTER TABLE patient_gender OWNER to pulse;
 
 CREATE TABLE query (
 	id bigserial not null,
@@ -418,7 +424,7 @@ CREATE TABLE patient_record (
 	id bigserial not null,
 	dob date,
 	ssn varchar(15),
-	gender varchar(10),
+	patient_gender_id bigint not null,
 	organization_patient_record_id varchar(1024),
 	phone_number varchar(100),
 	street_line_1 character varying(250),
@@ -431,6 +437,7 @@ CREATE TABLE patient_record (
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_record_pk PRIMARY KEY (id),
+	CONSTRAINT patient_gender_fk FOREIGN KEY (patient_gender_id) REFERENCES patient_gender (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT query_organization_fk FOREIGN KEY (query_organization_id) REFERENCES query_organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE patient_record OWNER TO pulse;
