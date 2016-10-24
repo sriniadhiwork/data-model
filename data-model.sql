@@ -565,6 +565,8 @@ SET search_path = pulse, pg_catalog;
 -- Name: audit_audit; Type: TRIGGER; Schema: pulse; Owner: pulse
 --
 
+CREATE TRIGGER patient_gender_audit AFTER INSERT OR DELETE OR UPDATE ON patient_gender FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER patient_gender_timestamp BEFORE UPDATE ON patient_gender FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_name_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_name FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_record_name_timestamp BEFORE UPDATE ON patient_record_name FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER name_assembly_audit AFTER INSERT OR DELETE OR UPDATE ON name_assembly FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
