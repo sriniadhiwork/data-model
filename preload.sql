@@ -1,5 +1,5 @@
 INSERT INTO pulse.query_organization_status (status)
-VALUES ('Active'), ('Success'), ('Cancelled'), ('Failed');
+VALUES ('Active'), ('Successful'), ('Cancelled'), ('Failed');
 
 INSERT INTO pulse.name_representation (code, description)
 VALUES ('A', 'Alphabetic (i.e. Default or some single-byte)'),
