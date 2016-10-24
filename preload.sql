@@ -16,3 +16,8 @@ VALUES ('A', 'Alias Name'), ('B', 'Name at Birth'), ('C', 'Adopted Name'),
 INSERT INTO pulse.name_assembly (code, description)
 VALUES('F', 'Prefix Family Middel Given Suffix'),
 ('G', 'Prefix Given Middle Family Suffix');
+
+INSERT INTO pulse.patient_gender (code, description)
+VALUES('F', 'Female'),
+('M', 'Male'),
+('UN', 'Undifferentiated');
