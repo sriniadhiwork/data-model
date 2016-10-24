@@ -384,8 +384,6 @@ CREATE TABLE patient (
 );
 ALTER TABLE patient OWNER TO pulse;
 
-
-
 CREATE TABLE query (
 	id bigserial not null,
 	user_id varchar(1024) not null,
@@ -416,8 +414,8 @@ ALTER TABLE query_organization OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
-	dob date,
-	ssn varchar(15),
+	dob varchar(100),
+	ssn varchar(9),
 	gender varchar(10),
 	organization_patient_record_id varchar(1024),
 	phone_number varchar(100),
