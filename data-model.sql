@@ -163,8 +163,8 @@ CREATE TABLE audit_request_source (
 	alternative_user_id varchar(100), --the process ID as used within the local operating system in the local system logs
 	user_name varchar(100),
 	user_is_requestor boolean default true,
-	role_id_code varchar(100), -- EV(110153, DCM, “Source”)
-	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	role_id_code varchar(100), -- EV(110153, DCM, â€œSourceâ€�)
+	network_access_point_type_code smallint, --â€œ1â€� for machine (DNS) name, â€œ2â€� for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_request_source_pk PRIMARY KEY (id)
 );
@@ -177,7 +177,7 @@ CREATE TABLE audit_human_requestor (
 	user_name varchar(100),
 	user_is_requestor boolean default true,
 	role_id_code varchar(100),
-	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	network_access_point_type_code smallint, --â€œ1â€� for machine (DNS) name, â€œ2â€� for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_human_requestor_pk PRIMARY KEY (id)
 );
@@ -189,8 +189,8 @@ CREATE TABLE audit_request_destination (
 	alternative_user_id varchar(100),
 	user_name varchar(100),
 	user_is_requestor boolean default false,
-	role_id_code varchar(100), -- EV(110152, DCM, “Destination”)
-	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	role_id_code varchar(100), -- EV(110152, DCM, â€œDestinationâ€�)
+	network_access_point_type_code smallint, --â€œ1â€� for machine (DNS) name, â€œ2â€� for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_request_destination_pk PRIMARY KEY (id)
 );
@@ -207,8 +207,8 @@ ALTER TABLE audit_source OWNER TO pulse;
 
 CREATE TABLE audit_patient (
 	id bigserial not null,
-	participant_object_type_code smallint NOT NULL, -- “1” (Person)
-	participant_object_type_code_role smallint NOT NULL, -- “1” (Patient)
+	participant_object_type_code smallint NOT NULL, -- â€œ1â€� (Person)
+	participant_object_type_code_role smallint NOT NULL, -- â€œ1â€� (Patient)
 	participant_object_data_lifecycle varchar(100),
 	participant_object_id_type_code varchar(100),
 	participant_object_sensitivity varchar(100),
@@ -222,10 +222,10 @@ ALTER TABLE audit_patient OWNER TO pulse;
 
 CREATE TABLE audit_query_parameters (
 	id bigserial not null,
-	participant_object_type_code smallint NOT NULL, -- “2” (system object)
-	participant_object_type_code_role smallint NOT NULL, -- “24” (query)
+	participant_object_type_code smallint NOT NULL, -- â€œ2â€� (system object)
+	participant_object_type_code_role smallint NOT NULL, -- â€œ24â€� (query)
 	participant_object_data_lifecycle varchar(100),
-	participant_object_id_type_code varchar(100), --  EV(“ITI-47”, “IHE Transactions”, “Patient Demographics Query”)
+	participant_object_id_type_code varchar(100), --  EV(â€œITI-47â€�, â€œIHE Transactionsâ€�, â€œPatient Demographics Queryâ€�)
 	participant_object_sensitivity varchar(100),
 	participant_object_id varchar(100), 
 	participant_object_name varchar(250),
@@ -340,6 +340,15 @@ CREATE TABLE alternate_care_facility_address_line (
 		REFERENCES alternate_care_facility (id) 
 		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE		
 );
+	
+CREATE TABLE query_organization_status (
+	id bigserial not null,
+	status varchar(30) not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT query_organization_status_pk PRIMARY KEY (id)
+);
+ALTER TABLE query_organization_status OWNER to pulse;
 		
 CREATE TABLE name_type (
 	id bigserial not null,
@@ -384,70 +393,31 @@ CREATE TABLE patient (
 );
 ALTER TABLE patient OWNER TO pulse;
 
-CREATE TABLE query (
+CREATE TABLE patient_gender (
 	id bigserial not null,
-	user_id varchar(1024) not null,
-	status varchar(25) not null, --active or complete
-	terms text,
-	last_read_date timestamp without time zone default now() not null,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT query_pk PRIMARY KEY (id)
+	code varchar(2) not null,
+	description varchar(100),
+	CONSTRAINT patient_gender_pk PRIMARY KEY (id)
 );
-ALTER TABLE query OWNER to pulse;
-
-CREATE TABLE query_organization (
-	id bigserial not null,
-	query_id bigint not null,
-	organization_id bigint not null,
-	status varchar(25) not null, --active or complete
-	start_date timestamp without time zone default now() not null,
-	end_date timestamp without time zone,
-	success boolean,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT query_organization_pk PRIMARY KEY (id),
-	CONSTRAINT query_fk FOREIGN KEY (query_id) REFERENCES query (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
-);
-ALTER TABLE query_organization OWNER to pulse;
-
-CREATE TABLE patient_record (
-	id bigserial not null,
-	dob varchar(100),
-	ssn varchar(9),
-	gender varchar(10),
-	organization_patient_record_id varchar(1024),
-	phone_number varchar(100),
-	street_line_1 character varying(250),
-	street_line_2 character varying(250),
-	city character varying(250),
-	state character varying(100),
-	zipcode character varying(100),
-	country character varying(250),
-	query_organization_id bigint,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT patient_record_pk PRIMARY KEY (id),
-	CONSTRAINT query_organization_fk FOREIGN KEY (query_organization_id) REFERENCES query_organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
-);
-ALTER TABLE patient_record OWNER TO pulse;
+ALTER TABLE patient_gender OWNER to pulse;
 
 CREATE TABLE patient_organization_map (
 	id bigserial not null,
 	patient_id bigint not null,
 	organization_id bigint not null,
 	organization_patient_id varchar(1024) not null,
-	documents_query_status varchar(25) not null, --active or complete
-	documents_query_success boolean, -- was it successfully retrieved
+	documents_query_status_id bigint not null, 
 	documents_query_start timestamp without time zone default now() not null,
 	documents_query_end timestamp without time zone,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
 	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT documents_query_status_fk FOREIGN KEY (documents_query_status_id) REFERENCES	
+		query_organization_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
 CREATE TABLE document (
 	id bigserial not null,
 	patient_organization_map_id bigint not null,
@@ -469,6 +439,57 @@ CREATE TABLE document (
 	CONSTRAINT patient_organization_map_fk FOREIGN KEY (patient_organization_map_id) REFERENCES patient_organization_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE document OWNER TO pulse;
+
+CREATE TABLE query (
+	id bigserial not null,
+	user_id varchar(1024) not null,
+	status varchar(25) not null, --active or complete
+	terms text,
+	last_read_date timestamp without time zone default now() not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT query_pk PRIMARY KEY (id)
+);
+ALTER TABLE query OWNER to pulse;
+
+CREATE TABLE query_organization (
+	id bigserial not null,
+	query_id bigint not null,
+	organization_id bigint not null,
+	query_organization_status_id bigint not null,
+	start_date timestamp without time zone default now() not null,
+	end_date timestamp without time zone,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT query_organization_pk PRIMARY KEY (id),
+	CONSTRAINT query_fk FOREIGN KEY (query_id) REFERENCES query (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT query_organization_status_fk FOREIGN KEY (query_organization_status_id) REFERENCES	
+		query_organization_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+);
+ALTER TABLE query_organization OWNER to pulse;
+
+CREATE TABLE patient_record (
+	id bigserial not null,
+	dob date,
+	ssn varchar(15),
+	patient_gender_id bigint not null,
+	organization_patient_record_id varchar(1024),
+	phone_number varchar(100),
+	street_line_1 character varying(250),
+	street_line_2 character varying(250),
+	city character varying(250),
+	state character varying(100),
+	zipcode character varying(100),
+	country character varying(250),
+	query_organization_id bigint,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT patient_record_pk PRIMARY KEY (id),
+	CONSTRAINT patient_gender_fk FOREIGN KEY (patient_gender_id) REFERENCES patient_gender (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT query_organization_fk FOREIGN KEY (query_organization_id) REFERENCES query_organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE patient_record OWNER TO pulse;
 
 CREATE TABLE patient_record_name (
 	id bigserial not null,
@@ -544,6 +565,8 @@ SET search_path = pulse, pg_catalog;
 -- Name: audit_audit; Type: TRIGGER; Schema: pulse; Owner: pulse
 --
 
+CREATE TRIGGER patient_gender_audit AFTER INSERT OR DELETE OR UPDATE ON patient_gender FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER patient_gender_timestamp BEFORE UPDATE ON patient_gender FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_name_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_name FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_record_name_timestamp BEFORE UPDATE ON patient_record_name FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER name_assembly_audit AFTER INSERT OR DELETE OR UPDATE ON name_assembly FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
@@ -570,6 +593,8 @@ CREATE TRIGGER query_audit AFTER INSERT OR DELETE OR UPDATE ON query FOR EACH RO
 CREATE TRIGGER query_timestamp BEFORE UPDATE ON query FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER query_organization_audit AFTER INSERT OR DELETE OR UPDATE ON query_organization FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER query_organization_timestamp BEFORE UPDATE ON query_organization FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER query_organization_status_audit AFTER INSERT OR DELETE OR UPDATE ON query_organization_status FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER query_organization_status_timestamp BEFORE UPDATE ON query_organization_status FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_record_timestamp BEFORE UPDATE ON patient_record FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER alternate_care_facility_audit AFTER INSERT OR DELETE OR UPDATE ON alternate_care_facility FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();

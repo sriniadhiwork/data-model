@@ -12,3 +12,5 @@ psql -h $host -U $user -f drop-pulse.sql pulse
 psql -h $host -U $user -f drop-pulse.sql pulse_test
 psql -h $host -U $user -f data-model.sql pulse
 psql -h $host -U $user -f data-model.sql pulse_test
+psql -h $host -U $user -f preload.sql pulse
+psql -h $host -U $user -f preload.sql pulse_test
