@@ -471,7 +471,7 @@ ALTER TABLE query_organization OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
-	dob date,
+	dob varchar(100),
 	ssn varchar(15),
 	patient_gender_id bigint not null,
 	organization_patient_record_id varchar(1024),
