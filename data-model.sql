@@ -163,8 +163,8 @@ CREATE TABLE audit_request_source (
 	alternative_user_id varchar(100), --the process ID as used within the local operating system in the local system logs
 	user_name varchar(100),
 	user_is_requestor boolean default true,
-	role_id_code varchar(100), -- EV(110153, DCM, “Source”)
-	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	role_id_code varchar(100), -- EV(110153, DCM, "Source")
+	network_access_point_type_code smallint, --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_request_source_pk PRIMARY KEY (id)
 );
@@ -177,7 +177,7 @@ CREATE TABLE audit_human_requestor (
 	user_name varchar(100),
 	user_is_requestor boolean default true,
 	role_id_code varchar(100),
-	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	network_access_point_type_code smallint, --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_human_requestor_pk PRIMARY KEY (id)
 );
@@ -189,8 +189,8 @@ CREATE TABLE audit_request_destination (
 	alternative_user_id varchar(100),
 	user_name varchar(100),
 	user_is_requestor boolean default false,
-	role_id_code varchar(100), -- EV(110152, DCM, “Destination”)
-	network_access_point_type_code smallint, --“1” for machine (DNS) name, “2” for IP address
+	role_id_code varchar(100), -- EV(110152, DCM, "Destination")
+	network_access_point_type_code smallint, --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_request_destination_pk PRIMARY KEY (id)
 );
@@ -207,8 +207,8 @@ ALTER TABLE audit_source OWNER TO pulse;
 
 CREATE TABLE audit_patient (
 	id bigserial not null,
-	participant_object_type_code smallint NOT NULL, -- “1” (Person)
-	participant_object_type_code_role smallint NOT NULL, -- “1” (Patient)
+	participant_object_type_code smallint NOT NULL, -- "1" (Person)
+	participant_object_type_code_role smallint NOT NULL, -- "1" (Patient)
 	participant_object_data_lifecycle varchar(100),
 	participant_object_id_type_code varchar(100),
 	participant_object_sensitivity varchar(100),
@@ -222,10 +222,10 @@ ALTER TABLE audit_patient OWNER TO pulse;
 
 CREATE TABLE audit_query_parameters (
 	id bigserial not null,
-	participant_object_type_code smallint NOT NULL, -- “2” (system object)
-	participant_object_type_code_role smallint NOT NULL, -- “24” (query)
+	participant_object_type_code smallint NOT NULL, -- "2" (system object)
+	participant_object_type_code_role smallint NOT NULL, -- "24" (query)
 	participant_object_data_lifecycle varchar(100),
-	participant_object_id_type_code varchar(100), --  EV(“ITI-47”, “IHE Transactions”, “Patient Demographics Query”)
+	participant_object_id_type_code varchar(100), --  EV("ITI-47", "IHE Transactions", "Patient Demographics Query")
 	participant_object_sensitivity varchar(100),
 	participant_object_id varchar(100), 
 	participant_object_name varchar(250),
@@ -366,7 +366,7 @@ CREATE TABLE patient (
 	id bigserial not null,
 	full_name varchar(255) not null,
 	friendly_name varchar(128) not null,
-	dob date,
+	dob varchar(100),
 	ssn varchar(15),
 	gender varchar(10),
 	alternate_care_facility_id bigint,
@@ -418,7 +418,7 @@ ALTER TABLE query_organization OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
-	dob date,
+	dob varchar(100),
 	ssn varchar(15),
 	patient_gender_id bigint not null,
 	organization_patient_record_id varchar(1024),
