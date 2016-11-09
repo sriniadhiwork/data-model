@@ -465,6 +465,7 @@ CREATE TABLE patient_organization_map (
 	patient_record_id bigint not null,
 	organization_id bigint not null,
 	organization_patient_record_id varchar(1024) not null,
+	documents_query_status_id bigint not null, 
 	documents_query_status varchar(25) not null, --active or complete
 	documents_query_success boolean, -- was it successfully retrieved
 	documents_query_start timestamp without time zone default now() not null,
