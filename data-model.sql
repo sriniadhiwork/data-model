@@ -297,20 +297,8 @@ ALTER TABLE organization OWNER TO pulse;
 
 --allow more lenient null fields in address since
 --in a crisis you may only know some parts of it
-CREATE TABLE address
-(
-  id bigserial NOT NULL,
-  street_line_1 character varying(250),
-  street_line_2 character varying(250),
-  city character varying(250),
-  state character varying(100),
-  zipcode character varying(100),
-  country character varying(250),
-  creation_date timestamp without time zone NOT NULL DEFAULT now(),
-  last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
-  CONSTRAINT address_pk PRIMARY KEY (id)
-);
-ALTER TABLE address OWNER TO pulse;
+
+
 
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
@@ -334,8 +322,8 @@ CREATE TABLE alternate_care_facility_address_line (
 	line_order int not null default 1,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT alternate_care_facility_address_linke_pk PRIMARY KEY (id),
-	CONSTRAINT line_key UNIQUE (alternate_care_facility_id, line),
+	CONSTRAINT alternate_care_facility_address_line_pk PRIMARY KEY (id),
+	CONSTRAINT acf_line_key UNIQUE (alternate_care_facility_id, line),
 	CONSTRAINT alternate_care_facility_fk FOREIGN KEY (alternate_care_facility_id) 
 		REFERENCES alternate_care_facility (id) 
 		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE		
@@ -381,14 +369,12 @@ CREATE TABLE patient (
 	dob varchar(100),
 	ssn varchar(15),
 	gender varchar(10),
-	address_id bigint,
 	alternate_care_facility_id bigint,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_pk PRIMARY KEY (id),
-	CONSTRAINT acf_fk FOREIGN KEY (alternate_care_facility_id) REFERENCES alternate_care_facility (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT address_fk FOREIGN KEY (address_id) REFERENCES address (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT acf_fk FOREIGN KEY (alternate_care_facility_id) REFERENCES alternate_care_facility (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 
 );
 ALTER TABLE patient OWNER TO pulse;
@@ -400,45 +386,6 @@ CREATE TABLE patient_gender (
 	CONSTRAINT patient_gender_pk PRIMARY KEY (id)
 );
 ALTER TABLE patient_gender OWNER to pulse;
-
-CREATE TABLE patient_organization_map (
-	id bigserial not null,
-	patient_id bigint not null,
-	organization_id bigint not null,
-	organization_patient_id varchar(1024) not null,
-	documents_query_status_id bigint not null, 
-	documents_query_start timestamp without time zone default now() not null,
-	documents_query_end timestamp without time zone,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
-	CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT documents_query_status_fk FOREIGN KEY (documents_query_status_id) REFERENCES	
-		query_organization_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-CREATE TABLE document (
-	id bigserial not null,
-	patient_organization_map_id bigint not null,
-	name varchar(500) not null,
-	format varchar(100),
-	contents bytea,
-	class_name varchar(150),
-	confidentiality varchar(150),
-	description varchar(500),
-	size varchar(10),
-	doc_creation_time varchar(100),
-	home_community_id varchar(100),
-	repository_unique_id varchar(100),
-	document_unique_id varchar(100),
-	last_read_date timestamp without time zone default now() not null,
-	last_modified_date timestamp without time zone default now() not null,
-	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT document_pk PRIMARY KEY (id),
-	CONSTRAINT patient_organization_map_fk FOREIGN KEY (patient_organization_map_id) REFERENCES patient_organization_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
-);
-ALTER TABLE document OWNER TO pulse;
 
 CREATE TABLE query (
 	id bigserial not null,
@@ -476,12 +423,6 @@ CREATE TABLE patient_record (
 	patient_gender_id bigint not null,
 	organization_patient_record_id varchar(1024),
 	phone_number varchar(100),
-	street_line_1 character varying(250),
-	street_line_2 character varying(250),
-	city character varying(250),
-	state character varying(100),
-	zipcode character varying(100),
-	country character varying(250),
 	query_organization_id bigint,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
@@ -490,6 +431,73 @@ CREATE TABLE patient_record (
 	CONSTRAINT query_organization_fk FOREIGN KEY (query_organization_id) REFERENCES query_organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE patient_record OWNER TO pulse;
+
+CREATE TABLE patient_record_address(
+  id bigserial NOT NULL,
+  patient_record_id bigint not null,
+  city character varying(250),
+  state character varying(100),
+  zipcode character varying(100),
+  creation_date timestamp without time zone NOT NULL DEFAULT now(),
+  last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT patient_record_id_fk FOREIGN KEY (patient_record_id) REFERENCES patient_record (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT patient_record_address_pk PRIMARY KEY (id)
+);
+ALTER TABLE patient_record_address OWNER TO pulse;
+
+CREATE TABLE patient_record_address_line (
+	id bigserial not null,
+	patient_record_address_id bigint not null,
+	line varchar(128) not null,
+	line_order int not null default 1,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT patient_record_address_line_pk PRIMARY KEY (id),
+	CONSTRAINT patient_record_address_line_key UNIQUE (patient_record_address_id, line),
+	CONSTRAINT patient_record_address_fk FOREIGN KEY (patient_record_address_id) 
+		REFERENCES patient_record_address (id) 
+		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE		
+);
+ALTER TABLE patient_record_address_line OWNER TO pulse;
+
+CREATE TABLE patient_organization_map (
+	id bigserial not null,
+	patient_record_id bigint not null,
+	organization_id bigint not null,
+	organization_patient_record_id varchar(1024) not null,
+	documents_query_status_id bigint not null, 
+	documents_query_status varchar(25) not null, --active or complete
+	documents_query_success boolean, -- was it successfully retrieved
+	documents_query_start timestamp without time zone default now() not null,
+	documents_query_end timestamp without time zone,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT patient_organization_map_pk PRIMARY KEY (id),
+	CONSTRAINT patient_record_fk FOREIGN KEY (patient_record_id) REFERENCES patient_record (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organization (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE document (
+	id bigserial not null,
+	patient_organization_map_id bigint not null,
+	name varchar(500) not null,
+	format varchar(100),
+	contents bytea,
+	class_name varchar(150),
+	confidentiality varchar(150),
+	description varchar(500),
+	size varchar(10),
+	doc_creation_time varchar(100),
+	home_community_id varchar(100),
+	repository_unique_id varchar(100),
+	document_unique_id varchar(100),
+	last_read_date timestamp without time zone default now() not null,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT document_pk PRIMARY KEY (id),
+	CONSTRAINT patient_organization_map_fk FOREIGN KEY (patient_organization_map_id) REFERENCES patient_organization_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE document OWNER TO pulse;
 
 CREATE TABLE patient_record_name (
 	id bigserial not null,
@@ -506,7 +514,7 @@ CREATE TABLE patient_record_name (
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT patient_name_pk PRIMARY KEY (id),
+	CONSTRAINT patient_record_name_pk PRIMARY KEY (id),
 	CONSTRAINT patient_record_id_fk FOREIGN KEY (patient_record_id) REFERENCES patient_record (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT name_type_fk FOREIGN KEY (name_type_id) REFERENCES name_type (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT name_representation_fk FOREIGN KEY (name_representation_id) REFERENCES name_representation (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
@@ -565,6 +573,10 @@ SET search_path = pulse, pg_catalog;
 -- Name: audit_audit; Type: TRIGGER; Schema: pulse; Owner: pulse
 --
 
+CREATE TRIGGER patient_record_address_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_address FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER patient_record_address_timestamp BEFORE UPDATE ON patient_record_address FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER patient_record_address_line_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_address_line FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER patient_record_address_line_timestamp BEFORE UPDATE ON patient_record_address_line FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_gender_audit AFTER INSERT OR DELETE OR UPDATE ON patient_gender FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_gender_timestamp BEFORE UPDATE ON patient_gender FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_name_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_name FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
@@ -581,8 +593,6 @@ CREATE TRIGGER audit_audit AFTER INSERT OR DELETE OR UPDATE ON audit FOR EACH RO
 CREATE TRIGGER audit_timestamp BEFORE UPDATE ON audit FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER organization_audit AFTER INSERT OR DELETE OR UPDATE ON organization FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER organization_timestamp BEFORE UPDATE ON organization FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
-CREATE TRIGGER address_audit AFTER INSERT OR DELETE OR UPDATE ON address FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER address_timestamp BEFORE UPDATE ON address FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_audit AFTER INSERT OR DELETE OR UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_timestamp BEFORE UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_organization_map_audit AFTER INSERT OR DELETE OR UPDATE ON patient_organization_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
