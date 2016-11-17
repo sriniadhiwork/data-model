@@ -142,17 +142,6 @@ SET search_path = pulse, pg_catalog;
 -- Name: audit; Type: TABLE; Schema: pulse; Owner: pulse; Tablespace: 
 --
 
-CREATE TABLE audit (
-    id bigserial NOT NULL,
-	query_type varchar(100) NOT NULL, -- patient search, document search, document cache, document retreival
-    query character varying(1024) NOT NULL,
-    creation_date timestamp without time zone DEFAULT now() NOT NULL,
-    querent character varying(128) NOT NULL,
-    last_modified_date timestamp without time zone DEFAULT now() NOT NULL,
-	CONSTRAINT audit_pk PRIMARY KEY (id)
-);
-ALTER TABLE audit OWNER TO pulse;
-
 -- ATNA Audit Tables
 -- based on p277 of this document
 -- http://www.ihe.net/uploadedFiles/Documents/ITI/IHE_ITI_TF_Vol2b.pdf
