@@ -1,4 +1,13 @@
-INSERT INTO pulse.query_organization_status (status)
+INSERT INTO pulse.location_status (name)
+VALUES ('Active'), ('Inactive');
+
+INSERT INTO pulse.endpoint_status (name)
+VALUES ('Active'), ('Inactive');
+
+INSERT INTO pulse.endpoint_type (name)
+VALUES ('Patient Discovery'), ('Query for Documents'), ('Retrieve Documents');
+
+INSERT INTO pulse.query_location_status (status)
 VALUES ('Active'), ('Successful'), ('Cancelled'), ('Failed');
 
 INSERT INTO pulse.name_representation (code, description)
