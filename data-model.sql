@@ -355,7 +355,7 @@ CREATE TABLE location_endpoint (
   	adapter character varying(128) NOT NULL, -- always eHealth?
 	payload_format varchar(128) NOT NULL, -- application/xml
 	payload_type varchar(64) NOT NULL, -- HL7 CCDA Document
-  	public_key character varying(256), -- publicKey
+  	public_key character varying(2048), -- publicKey
   	endpoint_url character varying(256), -- url (address field)
 	endpoint_last_updated timestamp without time zone, -- lastupdated field
 	last_modified_date timestamp without time zone default now() not null,
