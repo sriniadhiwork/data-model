@@ -267,6 +267,7 @@ CREATE TABLE audit_event (
 ALTER TABLE audit_event OWNER TO pulse;
 
 CREATE TABLE audit_event_human_requestor_map ( -- can have 0 to many per audit event
+	id bigserial NOT NULL,
 	audit_event_id bigint NOT NULL,
 	audit_human_requestor_id bigint NOT NULL,
 	CONSTRAINT audit_event_human_requestor_map_pk UNIQUE (audit_event_id, audit_human_requestor_id),
@@ -277,6 +278,7 @@ ALTER TABLE audit_event_human_requestor_map OWNER TO pulse;
 
 
 CREATE TABLE audit_event_patient_map ( -- can have 0 to many per audit event
+	id bigserial NOT NULL,
 	audit_event_id bigint NOT NULL,
 	audit_patient_id bigint NOT NULL,
 	CONSTRAINT audit_event_patient_map_pk UNIQUE (audit_event_id, audit_patient_id),
