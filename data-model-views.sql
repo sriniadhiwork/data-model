@@ -1,16 +1,18 @@
 DROP VIEW IF EXISTS pulse.patient_discovery_query_stats;
 CREATE OR REPLACE VIEW pulse.patient_discovery_query_stats AS
 SELECT 
-	org.id as organization_id,
-	org.name as organization_name,
-	org.is_active as organization_is_active,
-	org.adapter as organization_adapter,
+	loc.id as location_id,
+	loc.name as location_name,
+	locStatus.name as location_status_name,
+	loc.location_type as location_type,
 	status.status,
-	queryOrg.start_date,
-	queryOrg.end_date
-FROM pulse.query_organization queryOrg
-LEFT OUTER JOIN pulse.organization org on 
-	queryOrg.organization_id = org.id
-LEFT OUTER JOIN pulse.query_organization_status status on 
-	(queryOrg.query_organization_status_id IS NOT NULL 
-	AND queryOrg.query_organization_status_id = status.id);
+	queryLocationMap.start_date,
+	queryLocationMap.end_date
+FROM pulse.query_location_map queryLocationMap
+LEFT OUTER JOIN pulse.location loc on 
+	queryLocationMap.location_id = loc.id
+LEFT OUTER JOIN pulse.location_status locStatus on
+	loc.location_status_id = locStatus.id
+LEFT OUTER JOIN pulse.query_location_status status on 
+	(queryLocationMap.query_location_status_id IS NOT NULL 
+	AND queryLocationMap.query_location_status_id = status.id);
