@@ -153,7 +153,7 @@ CREATE TABLE audit_request_source (
 	user_name varchar(100),
 	user_is_requestor boolean default true,
 	role_id_code varchar(100), -- EV(110153, DCM, "Source")
-	network_access_point_type_code smallint, --"1" for machine (DNS) name, "2" for IP address
+	network_access_point_type_code varchar(1), --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_request_source_pk PRIMARY KEY (id)
 );
@@ -161,12 +161,13 @@ ALTER TABLE audit_request_source OWNER TO pulse;
 
 CREATE TABLE audit_human_requestor (
 	id bigserial NOT NULL,
+	audit_event_id bigint NOT NULL,
 	user_id varchar(50),
 	alternative_user_id varchar(100),
 	user_name varchar(100),
 	user_is_requestor boolean default true,
 	role_id_code varchar(100),
-	network_access_point_type_code smallint, --"1" for machine (DNS) name, "2" for IP address
+	network_access_point_type_code varchar(1), --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_human_requestor_pk PRIMARY KEY (id)
 );
@@ -179,7 +180,7 @@ CREATE TABLE audit_request_destination (
 	user_name varchar(100),
 	user_is_requestor boolean default false,
 	role_id_code varchar(100), -- EV(110152, DCM, "Destination")
-	network_access_point_type_code smallint, --"1" for machine (DNS) name, "2" for IP address
+	network_access_point_type_code varchar(1), --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
 	CONSTRAINT audit_request_destination_pk PRIMARY KEY (id)
 );
@@ -209,6 +210,26 @@ CREATE TABLE audit_patient (
 );
 ALTER TABLE audit_patient OWNER TO pulse;
 
+CREATE TABLE audit_document (
+	id bigserial not null,
+	participant_object_type_code smallint NOT NULL, -- "2" (System)
+	participant_object_type_code_role smallint NOT NULL, -- "3" (Report)
+	participant_object_data_lifecycle varchar(100),
+	participant_object_id_type_code varchar(100),
+	participant_object_sensitivity varchar(100),
+	participant_object_id varchar(100), -- The value of <ihe:DocumentUniqueId/>
+	participant_object_name varchar(250),
+	participant_object_query varchar(250),
+	participant_object_detail varchar(500), -- The ParticipantObjectDetail element may occur more than once.
+											-- In one element, the value of <ihe:RepositoryUniqueId/> in value
+											-- attribute, “Repository Unique Id” in type attribute
+											-- In another element, the value of “ihe:homeCommunityID” as the value
+											-- of the attribute type and the value of the homeCommunityID as the
+											-- value of the attribute value
+	CONSTRAINT audit_patient_pk PRIMARY KEY (id)
+);
+ALTER TABLE audit_document OWNER TO pulse;
+
 CREATE TABLE audit_query_parameters (
 	id bigserial not null,
 	participant_object_type_code smallint NOT NULL, -- "2" (system object)
@@ -229,13 +250,14 @@ CREATE TABLE audit_event (
 	id bigserial NOT NULL,
 	event_id varchar(100),
 	event_action_code varchar(5),
-	event_date_time timestamp without time zone DEFAULT now(),
+	event_date_time varchar(100),
 	event_outcome_indicator varchar(25),
 	event_type_code varchar(100),
 	audit_request_source_id bigint, --required for CONSUMER
 	audit_request_destination_id bigint, --required for SUPPLIER
 	audit_source_id bigint, --required for CONSUMER
 	audit_query_parameters_id bigint, -- required
+	audit_patient_id bigint,
 	CONSTRAINT audit_event_pk PRIMARY KEY (id),
 	CONSTRAINT audit_request_source_fk FOREIGN KEY (audit_request_source_id) REFERENCES audit_request_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_request_destination_fk FOREIGN KEY (audit_request_destination_id) REFERENCES audit_request_destination (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
