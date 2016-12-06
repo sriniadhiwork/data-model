@@ -1,8 +1,8 @@
 INSERT INTO pulse.location_status (name)
-VALUES ('Active'), ('Inactive');
+VALUES ('Active'), ('Off');
 
 INSERT INTO pulse.endpoint_status (name)
-VALUES ('Active'), ('Inactive');
+VALUES ('Active'), ('Off');
 
 INSERT INTO pulse.endpoint_type (name)
 VALUES ('Patient Discovery'), ('Query for Documents'), ('Retrieve Documents');
