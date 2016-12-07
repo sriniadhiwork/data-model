@@ -226,7 +226,8 @@ CREATE TABLE audit_document (
 											-- In another element, the value of “ihe:homeCommunityID” as the value
 											-- of the attribute type and the value of the homeCommunityID as the
 											-- value of the attribute value
-	CONSTRAINT audit_patient_pk PRIMARY KEY (id)
+	participant_object_detail_two varchar(500),
+	CONSTRAINT audit_document_pk PRIMARY KEY (id)
 );
 ALTER TABLE audit_document OWNER TO pulse;
 
@@ -239,7 +240,7 @@ CREATE TABLE audit_query_parameters (
 	participant_object_sensitivity varchar(100),
 	participant_object_id varchar(100), 
 	participant_object_name varchar(250),
-	participant_object_query varchar(250), -- the QueryByParameter segment of the query, base64 encoded
+	participant_object_query text, -- the QueryByParameter segment of the query, base64 encoded
 	participant_object_detail varchar(500),
 	CONSTRAINT audit_query_parameters_pk PRIMARY KEY (id)
 );
@@ -258,11 +259,14 @@ CREATE TABLE audit_event (
 	audit_source_id bigint, --required for CONSUMER
 	audit_query_parameters_id bigint, -- required
 	audit_patient_id bigint,
+	audit_document_id bigint,
 	CONSTRAINT audit_event_pk PRIMARY KEY (id),
 	CONSTRAINT audit_request_source_fk FOREIGN KEY (audit_request_source_id) REFERENCES audit_request_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_request_destination_fk FOREIGN KEY (audit_request_destination_id) REFERENCES audit_request_destination (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_source_fk FOREIGN KEY (audit_source_id) REFERENCES audit_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT audit_query_parameters_fk FOREIGN KEY (audit_query_parameters_id) REFERENCES audit_query_parameters (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT audit_query_parameters_fk FOREIGN KEY (audit_query_parameters_id) REFERENCES audit_query_parameters (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_patient_fk FOREIGN KEY (audit_patient_id) REFERENCES audit_patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT audit_document_fk FOREIGN KEY (audit_document_id) REFERENCES audit_document (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_event OWNER TO pulse;
 
@@ -679,8 +683,8 @@ CREATE TRIGGER name_type_audit AFTER INSERT OR DELETE OR UPDATE ON name_type FOR
 CREATE TRIGGER name_type_timestamp BEFORE UPDATE ON name_type FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER given_name_audit AFTER INSERT OR DELETE OR UPDATE ON given_name FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER given_name_timestamp BEFORE UPDATE ON given_name FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
-CREATE TRIGGER audit_audit AFTER INSERT OR DELETE OR UPDATE ON audit FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER audit_timestamp BEFORE UPDATE ON audit FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER audit_event_audit AFTER INSERT OR DELETE OR UPDATE ON audit_event FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER audit_event_timestamp AFTER INSERT OR DELETE OR UPDATE ON audit_event FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER location_audit AFTER INSERT OR DELETE OR UPDATE ON location FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER location_timestamp BEFORE UPDATE ON location FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER location_address_line_audit AFTER INSERT OR DELETE OR UPDATE ON location_address_line FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
