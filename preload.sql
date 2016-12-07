@@ -27,74 +27,9 @@ INSERT INTO pulse.name_assembly (code, description)
     ('G', 'Prefix Given Middle Family Suffix');
 
 INSERT INTO pulse.patient_gender (code, description)
-<<<<<<< HEAD
 VALUES('F', 'Female'),
 ('M', 'Male'),
 ('UN', 'Undifferentiated');
-
-INSERT INTO pulse.alternate_care_facility(name, state)
-VALUES('Alameda', 'CA'),
-('Alpine', 'CA'),
-('Amador', 'CA'),
-('Butte', 'CA'),
-('Calaveras', 'CA'),
-('Colusa', 'CA'),
-('Contra Costa', 'CA'),
-('Del Norte', 'CA'),
-('El Dorado', 'CA'),
-('Fresno', 'CA'),
-('Glenn', 'CA'),
-('Humboldt', 'CA'),
-('Imperial', 'CA'),
-('Inyo', 'CA'),
-('Kern', 'CA'),
-('Kings', 'CA'),
-('Lake', 'CA'),
-('Lassen', 'CA'),
-('Los Angeles', 'CA'),
-('Madera', 'CA'),
-('Marin', 'CA'),
-('Mariposa', 'CA'),
-('Mendocino', 'CA'),
-('Merced', 'CA'),
-('Modoc', 'CA'),
-('Mono', 'CA'),
-('Monterey', 'CA'),
-('Napa', 'CA'),
-('Nevada', 'CA'),
-('Orange', 'CA'),
-('Placer', 'CA'),
-('Plumas', 'CA'),
-('Riverside', 'CA'),
-('Sacramento', 'CA'),
-('San Benito', 'CA'),
-('San Bernardino', 'CA'),
-('San Diego', 'CA'),
-('San Francisco', 'CA'),
-('San Joaquin', 'CA'),
-('San Luis Obispo', 'CA'),
-('San Mateo', 'CA'),
-('Santa Barbara', 'CA'),
-('Santa Clara', 'CA'),
-('Santa Cruz', 'CA'),
-('Shasta', 'CA'),
-('Sierra', 'CA'),
-('Siskiyou', 'CA'),
-('Solano', 'CA'),
-('Sonoma', 'CA'),
-('Stanislaus', 'CA'),
-('Sutter', 'CA'),
-('Tehama', 'CA'),
-('Trinity', 'CA'),
-('Tulare', 'CA'),
-('Tuolumne', 'CA'),
-('Ventura', 'CA'),
-('Yolo', 'CA'),
-('Yuba', 'CA');
-=======
-    VALUES('F', 'Female'),
-    ('M', 'Male'),
-    ('UN', 'Undifferentiated');
 
 INSERT INTO pulse.alternate_care_facility (name)
     VALUES
@@ -156,4 +91,3 @@ INSERT INTO pulse.alternate_care_facility (name)
     ('Ventura-01'), ('Ventura-02'), ('Ventura-03'), ('Ventura-04'), ('Ventura-05'), ('Ventura-06'), ('Ventura-07'), ('Ventura-08'), ('Ventura-09'), ('Ventura-10'), ('Ventura-11'), ('Ventura-12'), ('Ventura-13'), ('Ventura-14'), ('Ventura-15'), ('Ventura-16'), ('Ventura-17'), ('Ventura-18'), ('Ventura-19'), ('Ventura-20'), ('Ventura-21'), ('Ventura-22'), ('Ventura-23'), ('Ventura-24'), ('Ventura-25'),
     ('Yolo-01'), ('Yolo-02'), ('Yolo-03'), ('Yolo-04'), ('Yolo-05'), ('Yolo-06'), ('Yolo-07'), ('Yolo-08'), ('Yolo-09'), ('Yolo-10'), ('Yolo-11'), ('Yolo-12'), ('Yolo-13'), ('Yolo-14'), ('Yolo-15'), ('Yolo-16'), ('Yolo-17'), ('Yolo-18'), ('Yolo-19'), ('Yolo-20'), ('Yolo-21'), ('Yolo-22'), ('Yolo-23'), ('Yolo-24'), ('Yolo-25'),
     ('Yuba-01'), ('Yuba-02'), ('Yuba-03'), ('Yuba-04'), ('Yuba-05'), ('Yuba-06'), ('Yuba-07'), ('Yuba-08'), ('Yuba-09'), ('Yuba-10'), ('Yuba-11'), ('Yuba-12'), ('Yuba-13'), ('Yuba-14'), ('Yuba-15'), ('Yuba-16'), ('Yuba-17'), ('Yuba-18'), ('Yuba-19'), ('Yuba-20'), ('Yuba-21'), ('Yuba-22'), ('Yuba-23'), ('Yuba-24'), ('Yuba-25');
->>>>>>> upstream/development
