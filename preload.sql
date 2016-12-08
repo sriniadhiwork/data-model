@@ -1,8 +1,8 @@
 INSERT INTO pulse.location_status (name)
-    VALUES ('Active'), ('Inactive');
+VALUES ('Active'), ('Off');
 
 INSERT INTO pulse.endpoint_status (name)
-    VALUES ('Active'), ('Inactive');
+VALUES ('Active'), ('Off');
 
 INSERT INTO pulse.endpoint_type (name)
     VALUES ('Patient Discovery'), ('Query for Documents'), ('Retrieve Documents');
@@ -27,9 +27,9 @@ INSERT INTO pulse.name_assembly (code, description)
     ('G', 'Prefix Given Middle Family Suffix');
 
 INSERT INTO pulse.patient_gender (code, description)
-    VALUES('F', 'Female'),
-    ('M', 'Male'),
-    ('UN', 'Undifferentiated');
+VALUES('F', 'Female'),
+('M', 'Male'),
+('UN', 'Undifferentiated');
 
 INSERT INTO pulse.alternate_care_facility (name)
     VALUES

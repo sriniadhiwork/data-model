@@ -324,7 +324,6 @@ CREATE TABLE location (
   	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
   	creation_date timestamp without time zone NOT NULL DEFAULT now(),
   	CONSTRAINT location_pk PRIMARY KEY (id),
-	CONSTRAINT location_name_key UNIQUE (name),
 	CONSTRAINT location_status_fk FOREIGN KEY (location_status_id)
 		REFERENCES location_status (id)
 		MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
@@ -353,8 +352,7 @@ CREATE TABLE location_endpoint (
 	location_id bigint NOT NULL,
 	endpoint_status_id bigint NOT NULL,
   	adapter character varying(128) NOT NULL, -- always eHealth?
-	payload_format varchar(128) NOT NULL, -- application/xml
-	payload_type varchar(64) NOT NULL, -- HL7 CCDA Document
+	payload_type varchar(512), -- HL7 CCDA Document
   	public_key character varying(2048), -- publicKey
   	endpoint_url character varying(256), -- url (address field)
 	endpoint_last_updated timestamp without time zone, -- lastupdated field
@@ -372,6 +370,19 @@ CREATE TABLE location_endpoint (
 		MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 ALTER TABLE location_endpoint OWNER TO pulse;
+
+CREATE TABLE location_endpoint_mime_type (
+	id bigserial NOT NULL,
+	location_endpoint_id bigint NOT NULL,
+	payload_mime_type varchar(128), -- application/xml
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT location_endpoint_mime_type_pk PRIMARY KEY (id),
+	CONSTRAINT location_endpoint_fk FOREIGN KEY (location_endpoint_id)
+		REFERENCES location_endpoint(id)
+		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE location_endpoint_mime_type OWNER TO pulse;
 
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
@@ -674,6 +685,8 @@ CREATE TRIGGER location_address_line_audit AFTER INSERT OR DELETE OR UPDATE ON l
 CREATE TRIGGER location_address_line_timestamp BEFORE UPDATE ON location_address_line FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER location_endpoint_audit AFTER INSERT OR DELETE OR UPDATE ON location_endpoint FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER location_endpoint_timestamp BEFORE UPDATE ON location_endpoint FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER location_endpoint_mime_type_audit AFTER INSERT OR DELETE OR UPDATE ON location_endpoint_mime_type FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER location_endpoint_mime_type_timestamp BEFORE UPDATE ON location_endpoint_mime_type FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_audit AFTER INSERT OR DELETE OR UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_timestamp BEFORE UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_location_map_audit AFTER INSERT OR DELETE OR UPDATE ON patient_location_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
