@@ -212,6 +212,7 @@ ALTER TABLE audit_patient OWNER TO pulse;
 
 CREATE TABLE audit_document (
 	id bigserial not null,
+	audit_event_id bigint,
 	participant_object_type_code smallint NOT NULL, -- "2" (System)
 	participant_object_type_code_role smallint NOT NULL, -- "3" (Report)
 	participant_object_data_lifecycle varchar(100),
@@ -254,19 +255,17 @@ CREATE TABLE audit_event (
 	event_date_time varchar(100),
 	event_outcome_indicator varchar(25),
 	event_type_code varchar(100),
-	audit_request_source_id bigint, --required for CONSUMER
-	audit_request_destination_id bigint, --required for SUPPLIER
-	audit_source_id bigint, --required for CONSUMER
-	audit_query_parameters_id bigint, -- required
+	audit_request_source_id bigint,
+	audit_request_destination_id bigint,
+	audit_source_id bigint,
+	audit_query_parameters_id bigint, 
 	audit_patient_id bigint,
-	audit_document_id bigint,
 	CONSTRAINT audit_event_pk PRIMARY KEY (id),
 	CONSTRAINT audit_request_source_fk FOREIGN KEY (audit_request_source_id) REFERENCES audit_request_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_request_destination_fk FOREIGN KEY (audit_request_destination_id) REFERENCES audit_request_destination (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_source_fk FOREIGN KEY (audit_source_id) REFERENCES audit_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_query_parameters_fk FOREIGN KEY (audit_query_parameters_id) REFERENCES audit_query_parameters (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT audit_patient_fk FOREIGN KEY (audit_patient_id) REFERENCES audit_patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT audit_document_fk FOREIGN KEY (audit_document_id) REFERENCES audit_document (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT audit_patient_fk FOREIGN KEY (audit_patient_id) REFERENCES audit_patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_event OWNER TO pulse;
 
