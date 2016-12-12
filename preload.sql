@@ -4,6 +4,18 @@ VALUES ('Active'), ('Off');
 INSERT INTO pulse.endpoint_status (name)
 VALUES ('Active'), ('Off');
 
+INSERT INTO pulse.event_action_code (code , description)
+    VALUES ('C', 'Create'), ('E', 'Execute');
+    
+INSERT INTO pulse.network_access_point_type_code (code , description)
+	VALUES ('1', 'Machine Name'), ('2', 'IP Address');
+	
+INSERT INTO pulse.participant_object_type_code (code , description)
+	VALUES ('1', 'Person'), ('2', 'System');
+	
+INSERT INTO pulse.participant_object_type_code_role (code , description)
+	VALUES ('3', 'Report'), ('1', 'Patient') , ('24', 'Query');
+
 INSERT INTO pulse.endpoint_type (name)
     VALUES ('Patient Discovery'), ('Query for Documents'), ('Retrieve Documents');
 
