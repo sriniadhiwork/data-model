@@ -146,6 +146,38 @@ SET search_path = pulse, pg_catalog;
 -- based on p277 of this document
 -- http://www.ihe.net/uploadedFiles/Documents/ITI/IHE_ITI_TF_Vol2b.pdf
 
+CREATE TABLE event_action_code (
+	id bigserial NOT NULL,
+	code varchar(2),
+	description varchar(20),
+	CONSTRAINT event_action_code_pk PRIMARY KEY (id)
+);
+ALTER TABLE event_action_code OWNER to pulse;
+
+CREATE TABLE network_access_point_type_code (
+	id bigserial NOT NULL,
+	code varchar(2),
+	description varchar(20),
+	CONSTRAINT network_access_point_type_code_pk PRIMARY KEY (id)
+);
+ALTER TABLE network_access_point_type_code OWNER TO pulse;
+
+CREATE TABLE participant_object_type_code (
+	id bigserial NOT NULL,
+	code varchar(2),
+	description varchar(20),
+	CONSTRAINT participant_object_type_code_pk PRIMARY KEY (id)
+);
+ALTER TABLE participant_object_type_code OWNER TO pulse;
+
+CREATE TABLE participant_object_type_code_role (
+	id bigserial NOT NULL,
+	code varchar(2),
+	description varchar(20),
+	CONSTRAINT participant_object_type_code_role_pk PRIMARY KEY (id)
+);
+ALTER TABLE participant_object_type_code_role OWNER TO pulse;
+
 CREATE TABLE audit_request_source (
 	id bigserial NOT NULL,
 	user_id varchar(50),
@@ -153,9 +185,12 @@ CREATE TABLE audit_request_source (
 	user_name varchar(100),
 	user_is_requestor boolean default true,
 	role_id_code varchar(100), -- EV(110153, DCM, "Source")
-	network_access_point_type_code varchar(1), --"1" for machine (DNS) name, "2" for IP address
+	network_access_point_type_code_id bigint, --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
-	CONSTRAINT audit_request_source_pk PRIMARY KEY (id)
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT audit_request_source_pk PRIMARY KEY (id),
+	CONSTRAINT network_access_point_type_code_fk FOREIGN KEY (network_access_point_type_code_id) REFERENCES network_access_point_type_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_request_source OWNER TO pulse;
 
@@ -167,9 +202,12 @@ CREATE TABLE audit_human_requestor (
 	user_name varchar(100),
 	user_is_requestor boolean default true,
 	role_id_code varchar(100),
-	network_access_point_type_code varchar(1), --"1" for machine (DNS) name, "2" for IP address
+	network_access_point_type_code_id bigint, --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
-	CONSTRAINT audit_human_requestor_pk PRIMARY KEY (id)
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT audit_human_requestor_pk PRIMARY KEY (id),
+	CONSTRAINT network_access_point_type_code_fk FOREIGN KEY (network_access_point_type_code_id) REFERENCES network_access_point_type_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_human_requestor OWNER TO pulse;
 
@@ -180,9 +218,12 @@ CREATE TABLE audit_request_destination (
 	user_name varchar(100),
 	user_is_requestor boolean default false,
 	role_id_code varchar(100), -- EV(110152, DCM, "Destination")
-	network_access_point_type_code varchar(1), --"1" for machine (DNS) name, "2" for IP address
+	network_access_point_type_code_id bigint, --"1" for machine (DNS) name, "2" for IP address
 	network_access_point_id varchar(255), --the machine name or IP address.
-	CONSTRAINT audit_request_destination_pk PRIMARY KEY (id)
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT audit_request_destination_pk PRIMARY KEY (id),
+	CONSTRAINT network_access_point_type_code_fk FOREIGN KEY (network_access_point_type_code_id) REFERENCES network_access_point_type_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_request_destination OWNER TO pulse;
 
@@ -191,14 +232,16 @@ CREATE TABLE audit_source (
 	audit_source_id varchar(100),
 	audit_enterprise_site_id varchar(100),
 	audit_source_type_code varchar(100),
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT audit_source_id PRIMARY KEY (id)
 );
 ALTER TABLE audit_source OWNER TO pulse;
 
 CREATE TABLE audit_patient (
 	id bigserial not null,
-	participant_object_type_code smallint NOT NULL, -- "1" (Person)
-	participant_object_type_code_role smallint NOT NULL, -- "1" (Patient)
+	participant_object_type_code_id bigint NOT NULL, -- "1" (Person)
+	participant_object_type_code_role_id bigint NOT NULL, -- "1" (Patient)
 	participant_object_data_lifecycle varchar(100),
 	participant_object_id_type_code varchar(100),
 	participant_object_sensitivity varchar(100),
@@ -206,15 +249,19 @@ CREATE TABLE audit_patient (
 	participant_object_name varchar(250),
 	participant_object_query varchar(250),
 	participant_object_detail varchar(500),
-	CONSTRAINT audit_patient_pk PRIMARY KEY (id)
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT audit_patient_pk PRIMARY KEY (id),
+	CONSTRAINT participant_object_type_code_fk FOREIGN KEY (participant_object_type_code_id) REFERENCES participant_object_type_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT participant_object_type_code_role_fk FOREIGN KEY (participant_object_type_code_role_id) REFERENCES participant_object_type_code_role (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_patient OWNER TO pulse;
 
 CREATE TABLE audit_document (
 	id bigserial not null,
 	audit_event_id bigint,
-	participant_object_type_code smallint NOT NULL, -- "2" (System)
-	participant_object_type_code_role smallint NOT NULL, -- "3" (Report)
+	participant_object_type_code_id bigint NOT NULL, -- "2" (System)
+	participant_object_type_code_role_id bigint NOT NULL, -- "3" (Report)
 	participant_object_data_lifecycle varchar(100),
 	participant_object_id_type_code varchar(100),
 	participant_object_sensitivity varchar(100),
@@ -228,14 +275,18 @@ CREATE TABLE audit_document (
 											-- of the attribute type and the value of the homeCommunityID as the
 											-- value of the attribute value
 	participant_object_detail_two varchar(500),
-	CONSTRAINT audit_document_pk PRIMARY KEY (id)
+	CONSTRAINT audit_document_pk PRIMARY KEY (id),
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT participant_object_type_code_fk FOREIGN KEY (participant_object_type_code_id) REFERENCES participant_object_type_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT participant_object_type_code_role_fk FOREIGN KEY (participant_object_type_code_role_id) REFERENCES participant_object_type_code_role (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_document OWNER TO pulse;
 
 CREATE TABLE audit_query_parameters (
 	id bigserial not null,
-	participant_object_type_code smallint NOT NULL, -- "2" (system object)
-	participant_object_type_code_role smallint NOT NULL, -- "24" (query)
+	participant_object_type_code_id bigint NOT NULL, -- "2" (system object)
+	participant_object_type_code_role_id bigint NOT NULL, -- "24" (query)
 	participant_object_data_lifecycle varchar(100),
 	participant_object_id_type_code varchar(100), --  EV("ITI-47", "IHE Transactions", "Patient Demographics Query")
 	participant_object_sensitivity varchar(100),
@@ -243,15 +294,18 @@ CREATE TABLE audit_query_parameters (
 	participant_object_name varchar(250),
 	participant_object_query text, -- the QueryByParameter segment of the query, base64 encoded
 	participant_object_detail varchar(500),
-	CONSTRAINT audit_query_parameters_pk PRIMARY KEY (id)
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT audit_query_parameters_pk PRIMARY KEY (id),
+	CONSTRAINT participant_object_type_code_fk FOREIGN KEY (participant_object_type_code_id) REFERENCES participant_object_type_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT participant_object_type_code_role_fk FOREIGN KEY (participant_object_type_code_role_id) REFERENCES participant_object_type_code_role (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE audit_query_parameters OWNER TO pulse;
-
 
 CREATE TABLE audit_event (
 	id bigserial NOT NULL,
 	event_id varchar(100),
-	event_action_code varchar(5),
+	event_action_code_id bigint,
 	event_date_time varchar(100),
 	event_outcome_indicator varchar(25),
 	event_type_code varchar(100),
@@ -260,6 +314,8 @@ CREATE TABLE audit_event (
 	audit_source_id bigint,
 	audit_query_parameters_id bigint, 
 	audit_patient_id bigint,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT audit_event_pk PRIMARY KEY (id),
 	CONSTRAINT audit_request_source_fk FOREIGN KEY (audit_request_source_id) REFERENCES audit_request_source (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT audit_request_destination_fk FOREIGN KEY (audit_request_destination_id) REFERENCES audit_request_destination (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
