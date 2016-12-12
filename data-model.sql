@@ -391,7 +391,6 @@ CREATE TABLE location (
 	city character varying(250),
 	state character varying(100),
 	zipcode character varying(100),
-	country character varying(250),
 	location_last_updated timestamp without time zone, -- lastupdated field
   	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
   	creation_date timestamp without time zone NOT NULL DEFAULT now(),
@@ -463,7 +462,6 @@ CREATE TABLE alternate_care_facility (
 	city character varying(250),
 	state character varying(100),
 	zipcode character varying(100),
-	country character varying(250),
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
