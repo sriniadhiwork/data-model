@@ -19,6 +19,9 @@ INSERT INTO pulse.participant_object_type_code_role (code , description)
 INSERT INTO pulse.endpoint_type (name)
     VALUES ('Patient Discovery'), ('Query for Documents'), ('Retrieve Documents');
 
+INSERT INTO pulse.query_status (status)
+	VALUES ('Active'), ('Complete'), ('Closed');
+	
 INSERT INTO pulse.query_location_status (status)
     VALUES ('Active'), ('Successful'), ('Cancelled'), ('Failed');
 
