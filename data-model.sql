@@ -649,6 +649,7 @@ CREATE TABLE patient_location_map (
 CREATE TABLE document (
 	id bigserial not null,
 	patient_location_map_id bigint not null,
+	status_id bigint, -- can be null if no one has tried to retrieve it yet
 	name varchar(500) not null,
 	format varchar(100),
 	contents bytea,
@@ -664,7 +665,10 @@ CREATE TABLE document (
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT document_pk PRIMARY KEY (id),
-	CONSTRAINT patient_location_map_fk FOREIGN KEY (patient_location_map_id) REFERENCES patient_location_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT patient_location_map_fk FOREIGN KEY (patient_location_map_id) REFERENCES patient_location_map (id) MATCH FULL 
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	 CONSTRAINT status_fk FOREIGN KEY (status_id) REFERENCES    
+        query_location_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 ALTER TABLE document OWNER TO pulse;
 
