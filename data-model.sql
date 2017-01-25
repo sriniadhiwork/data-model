@@ -137,6 +137,27 @@ ALTER TABLE logged_actions OWNER TO pulse;
 
 SET search_path = pulse, pg_catalog;
 
+CREATE TABLE pulse_event_action_code (
+	id bigserial NOT NULL,
+	code varchar(2),
+	description varchar(128),
+	CONSTRAINT pulse_event_action_code_pk PRIMARY KEY (id)
+);
+ALTER TABLE pulse_event_action_code OWNER to pulse;
+
+CREATE TABLE pulse_event_action (
+	id bigserial NOT NULL,
+	username varchar(32),
+	action_tstamp timestamp with time zone DEFAULT now() NOT NULL,
+	action_json json,
+	pulse_event_action_code_id bigint,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT pulse_event_action_pk PRIMARY KEY (id),
+	CONSTRAINT pulse_event_action_code_fk FOREIGN KEY (pulse_event_action_code_id) REFERENCES pulse_event_action_code (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE pulse_event_action OWNER to pulse;
+
 --
 -- TOC entry 175 (class 1259 OID 35923)
 -- Name: audit; Type: TABLE; Schema: pulse; Owner: pulse; Tablespace: 
@@ -746,6 +767,8 @@ SET search_path = pulse, pg_catalog;
 -- Name: audit_audit; Type: TRIGGER; Schema: pulse; Owner: pulse
 --
 
+CREATE TRIGGER pulse_event_action_audit AFTER INSERT OR DELETE OR UPDATE ON pulse_event_action FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER pulse_event_action_timestamp BEFORE UPDATE ON pulse_event_action FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_address_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_address FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_record_address_timestamp BEFORE UPDATE ON patient_record_address FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_address_line_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record_address_line FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
