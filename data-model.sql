@@ -529,7 +529,7 @@ CREATE TABLE patient (
 	id bigserial not null,
 	full_name varchar(255) not null,
 	friendly_name varchar(128),
-	dob date default now(),
+	dob varchar(100),
 	ssn varchar(15),
 	gender varchar(10),
 	alternate_care_facility_id bigint,
