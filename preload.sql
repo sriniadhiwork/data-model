@@ -26,7 +26,7 @@ INSERT INTO pulse.query_status (status)
 	VALUES ('Active'), ('Complete'), ('Closed');
 	
 INSERT INTO pulse.query_location_status (status)
-    VALUES ('Active'), ('Successful'), ('Cancelled'), ('Failed');
+    VALUES ('Active'), ('Successful'), ('Cancelled'), ('Failed'), ('Closed');
 
 INSERT INTO pulse.name_representation (code, description)
     VALUES ('A', 'Alphabetic (i.e. Default or some single-byte)'),
