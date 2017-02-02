@@ -8,7 +8,7 @@ INSERT INTO pulse.event_action_code (code , description)
     VALUES ('C', 'Create'), ('E', 'Execute');
     
 INSERT INTO pulse.pulse_event_action_code (code , description)
-    VALUES ('PC', 'Patient Creation'), ('DV', 'Document View'), ('PD', 'Patient Discharge');
+    VALUES ('PC', 'Patient Creation'), ('DV', 'Document View'), ('PD', 'Patient Discharge'), ('FE', 'ACF Edit');
     
 INSERT INTO pulse.network_access_point_type_code (code , description)
 	VALUES ('1', 'Machine Name'), ('2', 'IP Address');
