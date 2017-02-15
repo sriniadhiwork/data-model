@@ -394,6 +394,7 @@ ALTER TABLE location_status OWNER TO pulse;
 CREATE TABLE endpoint_type (
 	id bigserial NOT NULL,
 	name varchar(100) NOT NULL,
+	code varchar(10) NOT NULL,
 	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
 	creation_date timestamp without time zone NOT NULL DEFAULT now(),
 	CONSTRAINT endpoint_type_pk PRIMARY KEY (id),
