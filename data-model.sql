@@ -480,6 +480,7 @@ ALTER TABLE location_endpoint_mime_type OWNER TO pulse;
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
 	name varchar(500) not null,
+	friendly_name varchar(500),
 	phone_number varchar(50),
 	city character varying(250),
 	state character varying(100),
