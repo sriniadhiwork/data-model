@@ -49,7 +49,7 @@ VALUES('F', 'Female'),
 ('M', 'Male'),
 ('UN', 'Undifferentiated');
 
-INSERT INTO pulse.alternate_care_facility (name)
+INSERT INTO pulse.alternate_care_facility (identifier)
     VALUES
     ('Alameda-01'), ('Alameda-02'), ('Alameda-03'), ('Alameda-04'), ('Alameda-05'), ('Alameda-06'), ('Alameda-07'), ('Alameda-08'), ('Alameda-09'), ('Alameda-10'), ('Alameda-11'), ('Alameda-12'), ('Alameda-13'), ('Alameda-14'), ('Alameda-15'), ('Alameda-16'), ('Alameda-17'), ('Alameda-18'), ('Alameda-19'), ('Alameda-20'), ('Alameda-21'), ('Alameda-22'), ('Alameda-23'), ('Alameda-24'), ('Alameda-25'),
     ('Alpine-01'), ('Alpine-02'), ('Alpine-03'), ('Alpine-04'), ('Alpine-05'), ('Alpine-06'), ('Alpine-07'), ('Alpine-08'), ('Alpine-09'), ('Alpine-10'), ('Alpine-11'), ('Alpine-12'), ('Alpine-13'), ('Alpine-14'), ('Alpine-15'), ('Alpine-16'), ('Alpine-17'), ('Alpine-18'), ('Alpine-19'), ('Alpine-20'), ('Alpine-21'), ('Alpine-22'), ('Alpine-23'), ('Alpine-24'), ('Alpine-25'),
