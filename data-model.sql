@@ -479,7 +479,8 @@ ALTER TABLE location_endpoint_mime_type OWNER TO pulse;
 
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
-	name varchar(500) not null,
+	identifier varchar(500) not null,
+	name varchar(500),
 	phone_number varchar(50),
 	city character varying(250),
 	state character varying(100),
@@ -488,7 +489,7 @@ CREATE TABLE alternate_care_facility (
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT alternate_care_facility_pk PRIMARY KEY (id),
-	CONSTRAINT name_key UNIQUE (name)
+	CONSTRAINT identifier_key UNIQUE (identifier)
 );
 
 CREATE TABLE alternate_care_facility_address_line (
