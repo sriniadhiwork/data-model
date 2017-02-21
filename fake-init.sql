@@ -1,3 +1,5 @@
+truncate table only pulse.alternate_care_facility_address_line restart identity;
+
 create table pulse.fake_address_num (
         num character varying
         );
