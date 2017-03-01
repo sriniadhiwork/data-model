@@ -20,7 +20,7 @@ INSERT INTO pulse.participant_object_type_code_role (code , description)
 	VALUES ('3', 'Report'), ('1', 'Patient') , ('24', 'Query');
 
 INSERT INTO pulse.endpoint_type (name, code)
-    VALUES ('Patient Discovery', 'ihe-xcpd'), ('Query for Documents', 'ihe-xca'), ('Retrieve Documents', 'ihe-xca');
+    VALUES ('Patient Discovery', 'nwhin-xcpd'), ('Query for Documents', 'nwhin-xca-query'), ('Retrieve Documents', 'nwhin-xca-retrieve');
 
 INSERT INTO pulse.query_status (status)
 	VALUES ('Active'), ('Complete'), ('Closed');
