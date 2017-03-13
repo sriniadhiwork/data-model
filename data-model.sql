@@ -471,8 +471,9 @@ CREATE TABLE location_endpoint_map (
 		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT location_fk FOREIGN KEY (location_id)
 		REFERENCES location (id)
-		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
+ALTER TABLE location_endpoint_map OWNER TO pulse;
 
 CREATE TABLE alternate_care_facility (
 	id bigserial not null,
