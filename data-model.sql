@@ -465,6 +465,8 @@ CREATE TABLE location_endpoint_map (
 	id bigserial NOT NULL,
 	endpoint_id bigint NOT NULL,
 	location_id bigint NOT NULL,
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT location_endpoint_map_pk PRIMARY KEY (id),
 	CONSTRAINT endpoint_fk FOREIGN KEY (endpoint_id)
 		REFERENCES endpoint (id)
