@@ -25,7 +25,7 @@ INSERT INTO pulse.endpoint_type (name, code)
 INSERT INTO pulse.query_status (status)
 	VALUES ('Active'), ('Complete'), ('Closed');
 	
-INSERT INTO pulse.query_location_status (status)
+INSERT INTO pulse.query_endpoint_status (status)
     VALUES ('Active'), ('Successful'), ('Cancelled'), ('Failed'), ('Closed');
 
 INSERT INTO pulse.name_representation (code, description)

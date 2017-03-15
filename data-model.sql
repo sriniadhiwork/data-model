@@ -461,6 +461,19 @@ CREATE TABLE endpoint (
 );
 ALTER TABLE endpoint OWNER TO pulse;
 
+CREATE TABLE endpoint_mime_type (
+	id bigserial NOT NULL,
+	endpoint_id bigint NOT NULL,
+	payload_mime_type varchar(128), -- application/xml
+	last_modified_date timestamp without time zone default now() not null,
+	creation_date timestamp without time zone default now() not null,
+	CONSTRAINT endpoint_mime_type_pk PRIMARY KEY (id),
+	CONSTRAINT endpoint_fk FOREIGN KEY (endpoint_id)
+		REFERENCES endpoint(id)
+		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE endpoint_mime_type OWNER TO pulse;
+
 CREATE TABLE location_endpoint_map (
 	id bigserial NOT NULL,
 	endpoint_id bigint NOT NULL,
@@ -515,14 +528,14 @@ CREATE TABLE query_status (
 );
 ALTER TABLE query_status OWNER to pulse;
 	
-CREATE TABLE query_location_status (
+CREATE TABLE query_endpoint_status (
 	id bigserial not null,
 	status varchar(30) not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT query_location_status_pk PRIMARY KEY (id)
+	CONSTRAINT query_endpoint_status_pk PRIMARY KEY (id)
 );
-ALTER TABLE query_location_status OWNER to pulse;
+ALTER TABLE query_endpoint_status OWNER to pulse;
 		
 CREATE TABLE name_type (
 	id bigserial not null,
@@ -590,36 +603,36 @@ CREATE TABLE query (
 );
 ALTER TABLE query OWNER to pulse;
 
-CREATE TABLE query_location_map (
+CREATE TABLE query_endpoint_map (
 	id bigserial not null,
 	query_id bigint not null,
-	location_id bigint not null,
-	query_location_status_id bigint not null,
+	endpoint_id bigint not null,
+	query_endpoint_status_id bigint not null,
 	start_date timestamp without time zone default now() not null,
 	end_date timestamp without time zone,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
-	CONSTRAINT query_location_map_pk PRIMARY KEY (id),
+	CONSTRAINT query_endpoint_map_pk PRIMARY KEY (id),
 	CONSTRAINT query_fk FOREIGN KEY (query_id) REFERENCES query (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT location_fk FOREIGN KEY (location_id) REFERENCES location (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT query_location_status_fk FOREIGN KEY (query_location_status_id) REFERENCES	
-		query_location_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+	CONSTRAINT endpoint_fk FOREIGN KEY (endpoint_id) REFERENCES endpoint (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT query_endpoint_status_fk FOREIGN KEY (query_endpoint_status_id) REFERENCES	
+		query_endpoint_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
-ALTER TABLE query_location_map OWNER to pulse;
+ALTER TABLE query_endpoint_map OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
 	dob varchar(100),
 	ssn varchar(15),
 	patient_gender_id bigint not null,
-	location_patient_record_id varchar(1024),
+	endpoint_patient_record_id varchar(1024),
 	phone_number varchar(100),
-	query_location_map_id bigint,
+	query_endpoint_map_id bigint,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_record_pk PRIMARY KEY (id),
 	CONSTRAINT patient_gender_fk FOREIGN KEY (patient_gender_id) REFERENCES patient_gender (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT query_location_map_fk FOREIGN KEY (query_location_map_id) REFERENCES query_location_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT query_endpoint_map_fk FOREIGN KEY (query_endpoint_map_id) REFERENCES query_endpoint_map (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE patient_record OWNER TO pulse;
 
@@ -652,11 +665,11 @@ CREATE TABLE patient_record_address_line (
 ALTER TABLE patient_record_address_line OWNER TO pulse;
 
 
-CREATE TABLE patient_location_map (
+CREATE TABLE patient_endpoint_map (
     id bigserial not null,
     patient_id bigint not null,
-    location_id bigint not null,
-    location_patient_record_id varchar(1024) not null,
+    endpoint_id bigint not null,
+    endpoint_patient_record_id varchar(1024) not null,
     documents_query_status_id bigint not null, 
     documents_query_start timestamp without time zone default now() not null,
     documents_query_end timestamp without time zone,
@@ -664,14 +677,14 @@ CREATE TABLE patient_location_map (
     creation_date timestamp without time zone default now() not null,
     CONSTRAINT patient_location_map_pk PRIMARY KEY (id),
     CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patient (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT location_fk FOREIGN KEY (location_id) REFERENCES location (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT endpoint_fk FOREIGN KEY (endpoint_id) REFERENCES endpoint (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT documents_query_status_fk FOREIGN KEY (documents_query_status_id) REFERENCES    
-        query_location_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+        query_endpoint_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE document (
 	id bigserial not null,
-	patient_location_map_id bigint not null,
+	patient_endpoint_map_id bigint not null,
 	status_id bigint, -- can be null if no one has tried to retrieve it yet
 	name varchar(500) not null,
 	format varchar(100),
@@ -688,10 +701,10 @@ CREATE TABLE document (
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT document_pk PRIMARY KEY (id),
-	CONSTRAINT patient_location_map_fk FOREIGN KEY (patient_location_map_id) REFERENCES patient_location_map (id) MATCH FULL 
+	CONSTRAINT patient_endpoint_map_fk FOREIGN KEY (patient_endpoint_map_id) REFERENCES patient_endpoint_map (id) MATCH FULL 
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	 CONSTRAINT status_fk FOREIGN KEY (status_id) REFERENCES    
-        query_location_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
+        query_endpoint_status (id) MATCH FULL ON DELETE RESTRICT ON UPDATE CASCADE
 );
 ALTER TABLE document OWNER TO pulse;
 
@@ -809,22 +822,24 @@ CREATE TRIGGER location_address_line_audit AFTER INSERT OR DELETE OR UPDATE ON l
 CREATE TRIGGER location_address_line_timestamp BEFORE UPDATE ON location_address_line FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER endpoint_audit AFTER INSERT OR DELETE OR UPDATE ON endpoint FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER endpoint_timestamp BEFORE UPDATE ON endpoint FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER endpoint_mime_type_audit AFTER INSERT OR DELETE OR UPDATE ON endpoint_mime_type FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER endpoint_mime_type_timestamp BEFORE UPDATE ON endpoint_mime_type FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER location_endpoint_map_audit AFTER INSERT OR DELETE OR UPDATE ON location_endpoint_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER location_endpoint_map_timestamp BEFORE UPDATE ON location_endpoint_map FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_audit AFTER INSERT OR DELETE OR UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_timestamp BEFORE UPDATE ON patient FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
-CREATE TRIGGER patient_location_map_audit AFTER INSERT OR DELETE OR UPDATE ON patient_location_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER patient_location_map_timestamp BEFORE UPDATE ON patient_location_map FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER patient_endpoint_map_audit AFTER INSERT OR DELETE OR UPDATE ON patient_endpoint_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER patient_endpoint_map_timestamp BEFORE UPDATE ON patient_endpoint_map FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER document_audit AFTER INSERT OR DELETE OR UPDATE ON document FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER document_timestamp BEFORE UPDATE ON document FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER query_audit AFTER INSERT OR DELETE OR UPDATE ON query FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER query_timestamp BEFORE UPDATE ON query FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER query_status_audit AFTER INSERT OR DELETE OR UPDATE ON query_status FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER query_status_timestamp BEFORE UPDATE ON query_status FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
-CREATE TRIGGER query_location_audit AFTER INSERT OR DELETE OR UPDATE ON query_location_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER query_location_timestamp BEFORE UPDATE ON query_location_map FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
-CREATE TRIGGER query_location_status_audit AFTER INSERT OR DELETE OR UPDATE ON query_location_status FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER query_location_status_timestamp BEFORE UPDATE ON query_location_status FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER query_endpoint_map_audit AFTER INSERT OR DELETE OR UPDATE ON query_endpoint_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER query_endpoint_map_timestamp BEFORE UPDATE ON query_endpoint_map FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
+CREATE TRIGGER query_endpoint_status_audit AFTER INSERT OR DELETE OR UPDATE ON query_endpoint_status FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER query_endpoint_status_timestamp BEFORE UPDATE ON query_endpoint_status FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER patient_record_audit AFTER INSERT OR DELETE OR UPDATE ON patient_record FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER patient_record_timestamp BEFORE UPDATE ON patient_record FOR EACH ROW EXECUTE PROCEDURE update_last_modified_date_column();
 CREATE TRIGGER alternate_care_facility_audit AFTER INSERT OR DELETE OR UPDATE ON alternate_care_facility FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
