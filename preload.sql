@@ -1,8 +1,8 @@
 INSERT INTO pulse.location_status (name)
-VALUES ('Active'), ('Off');
+VALUES ('Active'), ('Suspended'), ('Inactive');
 
 INSERT INTO pulse.endpoint_status (name)
-VALUES ('Active'), ('Off');
+VALUES ('Active'), ('Suspended'), ('Error'), ('Off'), ('Entered-in-error'), ('Test');
 
 INSERT INTO pulse.event_action_code (code , description)
     VALUES ('C', 'Create'), ('E', 'Execute');
