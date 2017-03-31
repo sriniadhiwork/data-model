@@ -560,11 +560,11 @@ ALTER TABLE name_assembly OWNER TO pulse;
 
 CREATE TABLE patient (
 	id bigserial not null,
-	full_name varchar(255) not null,
-	friendly_name varchar(128),
-	dob varchar(100),
-	ssn varchar(15),
-	gender varchar(10),
+	full_name_enc bytea not null,
+	friendly_name_enc bytea,
+	dob_enc bytea,
+	ssn_enc bytea,
+	gender_enc bytea,
 	alternate_care_facility_id bigint,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
@@ -577,8 +577,8 @@ ALTER TABLE patient OWNER TO pulse;
 
 CREATE TABLE patient_gender (
 	id bigserial not null,
-	code varchar(2) not null,
-	description varchar(100),
+	code_enc bytea not null,
+	description_enc bytea,
 	CONSTRAINT patient_gender_pk PRIMARY KEY (id)
 );
 ALTER TABLE patient_gender OWNER to pulse;
@@ -590,7 +590,7 @@ CREATE TABLE query (
 	id bigserial not null,
 	user_id varchar(1024) not null,
 	query_status_id bigint not null,
-	terms text,
+	terms_enc bytea,
 	last_read_date timestamp without time zone default now() not null,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
@@ -619,11 +619,11 @@ ALTER TABLE query_endpoint_map OWNER to pulse;
 
 CREATE TABLE patient_record (
 	id bigserial not null,
-	dob varchar(100),
-	ssn varchar(15),
+	dob_enc bytea,
+	ssn_enc bytea,
 	patient_gender_id bigint not null,
 	endpoint_patient_record_id varchar(1024),
-	phone_number varchar(100),
+	phone_number_enc bytea,
 	query_endpoint_map_id bigint,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
@@ -636,9 +636,9 @@ ALTER TABLE patient_record OWNER TO pulse;
 CREATE TABLE patient_record_address(
   id bigserial NOT NULL,
   patient_record_id bigint not null,
-  city character varying(250),
-  state character varying(100),
-  zipcode character varying(100),
+  city_enc bytea,
+  state_enc bytea,
+  zipcode_enc bytea,
   creation_date timestamp without time zone NOT NULL DEFAULT now(),
   last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
   CONSTRAINT patient_record_id_fk FOREIGN KEY (patient_record_id) REFERENCES patient_record (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
@@ -649,12 +649,12 @@ ALTER TABLE patient_record_address OWNER TO pulse;
 CREATE TABLE patient_record_address_line (
 	id bigserial not null,
 	patient_record_address_id bigint not null,
-	line varchar(128) not null,
+	line_enc bytea not null,
 	line_order int not null default 1,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT patient_record_address_line_pk PRIMARY KEY (id),
-	CONSTRAINT patient_record_address_line_key UNIQUE (patient_record_address_id, line),
+	CONSTRAINT patient_record_address_line_key UNIQUE (patient_record_address_id, line_enc),
 	CONSTRAINT patient_record_address_fk FOREIGN KEY (patient_record_address_id)
 		REFERENCES patient_record_address (id)
 		MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
@@ -682,14 +682,14 @@ CREATE TABLE document (
 	id bigserial not null,
 	patient_endpoint_map_id bigint not null,
 	status_id bigint, -- can be null if no one has tried to retrieve it yet
-	name varchar(500) not null,
-	format varchar(100),
-	contents bytea,
-	class_name varchar(150),
-	confidentiality varchar(150),
-	description varchar(500),
-	size varchar(10),
-	doc_creation_time varchar(100),
+	name_enc bytea not null,
+	format_enc bytea,
+	contents_enc bytea,
+	class_name_enc bytea,
+	confidentiality_enc bytea,
+	description_enc bytea,
+	size_enc bytea,
+	doc_creation_time_enc bytea,
 	home_community_id varchar(100),
 	repository_unique_id varchar(100),
 	document_unique_id varchar(100),
@@ -708,12 +708,12 @@ CREATE TABLE patient_record_name (
 	id bigserial not null,
 	patient_record_id bigint not null,
 	name_type_id bigint not null,
-	family_name varchar(200) not null,
+	family_name_enc bytea not null,
 	name_representation_id bigint,
 	name_assembly_id bigint,
-	suffix varchar(30),
-	prefix varchar(30),
-	prof_suffix varchar(30),
+	suffix_enc bytea,
+	prefix_enc bytea,
+	prof_suffix_enc bytea,
 	effective_date date,
 	expiration_date date,
 	last_read_date timestamp without time zone default now() not null,
@@ -729,7 +729,7 @@ ALTER TABLE patient_record_name OWNER TO pulse;
 
 CREATE TABLE given_name (
 	id bigserial not null,
-	name varchar(100),
+	name_enc bytea,
 	patient_record_name_id bigint not null,
 	CONSTRAINT given_record_name_pk PRIMARY KEY (id),
 	CONSTRAINT patient_record_name_fk FOREIGN KEY (patient_record_name_id) REFERENCES patient_record_name (id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE
