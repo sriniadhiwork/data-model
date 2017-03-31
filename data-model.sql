@@ -146,7 +146,7 @@ CREATE TABLE pulse_event_action (
 	id bigserial NOT NULL,
 	username varchar(32),
 	action_tstamp timestamp with time zone DEFAULT now() NOT NULL,
-	action_json text,
+	action_json_enc bytea,
 	pulse_event_action_code_id bigint,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,

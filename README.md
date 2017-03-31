@@ -15,6 +15,17 @@ $ ./fake.sh
 
 # Encrypting PHI
 
+## Install the pgcrypto Postgres Extension
+
+* To install the extension:
+```sql
+CREATE EXTENSION pgcrypto;
+```
+* To see which extensions are installed
+```sql
+\dx
+```
+
 ## Create public and private keys to use for encrypting and decrypting sensitive personal information in the database.
 
 * Install pgp if your system does not have it already. Windows users likely have to install something and Linux users likely do not.
