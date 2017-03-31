@@ -19,20 +19,26 @@ $ ./fake.sh
 
 * Install pgp if your system does not have it already. Windows users likely have to install something and Linux users likely do not.
   * Gnupg4win (https://www.gnupg.org/download/)
+
+* Create the keys:
 ```sh
 $ gpg --gen-key
 ```
 
 * Follow the prompts keeping in mind the notes below.
-  * The preferred type of key is Option 2 (DSA and Elgamal)
-  * You can set an expiration if you'd like, but it is recommended not to unless you want to create keys again.
-  * DO NOT set a password. Hit enter leaving the password prompts blank and accept all related warnings.
+  * Type 1 (RSA) or Type 2 (DSA) should be fine.
+  * I chose a size of 2048.
+  * You can set an expiration if you'd like, but you probably shouldn't unless you really enjoy following these steps.
+  * DO NOT set a password. Hit enter to leave the password prompts blank and accept all related warnings.
 
-* View the keys you created:
+* View the keys you created. The one listed as "sec" is the private key and the other is the public key.
 ```sh
 $ gpg --list-secret-keys
+
+sec   2048R/7049EF5F 2017-03-30
+uid                  pulse <pulse@ainq.com>
+ssb   2048R/F68178C3 2017-03-30
 ```
-The one listed as "sec" is the private key and the other is the public key.
 
 * Export the keys in a readable format.
 ```sh
@@ -43,7 +49,7 @@ gpg -a --export-secret-keys 123ABCD > private.key
 ## Add the public and private keys as data that will be returned by a database function in Postgres
 * Create the below functions in both the pulse and pulse_test databases.
 
-  * Open the public.key file and copy its contents entirely
+  * Open the public.key file and copy its contents into a function like the one below. Run the function.
 ```sql
 CREATE OR REPLACE FUNCTION public_key() RETURNS varchar as $$
 	BEGIN
@@ -57,7 +63,7 @@ inthekey
 $$ LANGUAGE plpgsql;
 ```
 
-  * Open the private.key file and copy its contents entirely
+  * Open the private.key file and copy its contents into a function like the one below. Run the function.
 ```sql
 CREATE OR REPLACE FUNCTION private_key() RETURNS varchar as $$
 	BEGIN
