@@ -62,7 +62,7 @@ gpg -a --export-secret-keys 7049EF5F > private.key
 
   * Open the public.key file and copy its contents into a function like the one below. Run the function.
 ```sql
-CREATE OR REPLACE FUNCTION public_key() RETURNS text as $$
+CREATE OR REPLACE FUNCTION pulse.public_key() RETURNS text as $$
 	BEGIN
 		RETURN '-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v2
@@ -76,7 +76,7 @@ $$ LANGUAGE plpgsql;
 
   * Open the private.key file and copy its contents into a function like the one below. Run the function.
 ```sql
-CREATE OR REPLACE FUNCTION private_key() RETURNS text as $$
+CREATE OR REPLACE FUNCTION pulse.private_key() RETURNS text as $$
 	BEGIN
 		RETURN '-----BEGIN PGP PRIVATE KEY BLOCK-----
 Version: GnuPG v2
