@@ -42,8 +42,8 @@ ssb   2048R/F68178C3 2017-03-30
 
 * Export the keys in a readable format.
 ```sh
-gpg -a --export 999DEFG > public.key
-gpg -a --export-secret-keys 123ABCD > private.key
+gpg -a --export F68178C3 > public.key
+gpg -a --export-secret-keys 7049EF5F > private.key
 ```
 
 ## Add the public and private keys as data that will be returned by a database function in Postgres
@@ -51,7 +51,7 @@ gpg -a --export-secret-keys 123ABCD > private.key
 
   * Open the public.key file and copy its contents into a function like the one below. Run the function.
 ```sql
-CREATE OR REPLACE FUNCTION public_key() RETURNS varchar as $$
+CREATE OR REPLACE FUNCTION public_key() RETURNS text as $$
 	BEGIN
 		RETURN '-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v2
@@ -65,7 +65,7 @@ $$ LANGUAGE plpgsql;
 
   * Open the private.key file and copy its contents into a function like the one below. Run the function.
 ```sql
-CREATE OR REPLACE FUNCTION private_key() RETURNS varchar as $$
+CREATE OR REPLACE FUNCTION private_key() RETURNS text as $$
 	BEGIN
 		RETURN '-----BEGIN PGP PRIVATE KEY BLOCK-----
 Version: GnuPG v2
