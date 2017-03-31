@@ -13,9 +13,9 @@ $ ./reset.sh
 $ ./fake.sh
 ```
 
-#Encrypting PHI
+# Encrypting PHI
 
-##Create public and private keys to use for encrypting and decrypting sensitive personal information in the database.
+## Create public and private keys to use for encrypting and decrypting sensitive personal information in the database.
 
 * Install pgp if your system does not have it already. Windows users likely have to install something and Linux users likely do not.
   * Gnupg4win (https://www.gnupg.org/download/)
@@ -40,7 +40,7 @@ gpg -a --export 999DEFG > public.key
 gpg -a --export-secret-keys 123ABCD > private.key
 ```
 
-###Add the public and private keys as data that will be returned by a database function in Postgres
+## Add the public and private keys as data that will be returned by a database function in Postgres
 * Create the below functions in both the pulse and pulse_test databases.
 
   * Open the public.key file and copy its contents entirely
