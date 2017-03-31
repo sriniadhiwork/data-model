@@ -264,9 +264,9 @@ CREATE TABLE audit_patient (
 	participant_object_id_type_code varchar(100),
 	participant_object_sensitivity varchar(100),
 	participant_object_id varchar(100), -- The patient ID in HL7 CX format (see ITI TF-2x: appendix E).
-	participant_object_name varchar(250),
-	participant_object_query varchar(250),
-	participant_object_detail varchar(500),
+	participant_object_name_enc bytea,
+	participant_object_query_enc bytea,
+	participant_object_detail_enc bytea,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT audit_patient_pk PRIMARY KEY (id),
@@ -284,15 +284,15 @@ CREATE TABLE audit_document (
 	participant_object_id_type_code varchar(100),
 	participant_object_sensitivity varchar(100),
 	participant_object_id varchar(100), -- The value of <ihe:DocumentUniqueId/>
-	participant_object_name varchar(250),
-	participant_object_query varchar(250),
-	participant_object_detail varchar(500), -- The ParticipantObjectDetail element may occur more than once.
+	participant_object_name_enc bytea,
+	participant_object_query_enc bytea,
+	participant_object_detail_enc bytea, -- The ParticipantObjectDetail element may occur more than once.
 											-- In one element, the value of <ihe:RepositoryUniqueId/> in value
 											-- attribute, “Repository Unique Id” in type attribute
 											-- In another element, the value of “ihe:homeCommunityID” as the value
 											-- of the attribute type and the value of the homeCommunityID as the
 											-- value of the attribute value
-	participant_object_detail_two varchar(500),
+	participant_object_detail_two_enc bytea,
 	CONSTRAINT audit_document_pk PRIMARY KEY (id),
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
@@ -309,9 +309,9 @@ CREATE TABLE audit_query_parameters (
 	participant_object_id_type_code varchar(100), --  EV("ITI-47", "IHE Transactions", "Patient Demographics Query")
 	participant_object_sensitivity varchar(100),
 	participant_object_id varchar(100),
-	participant_object_name varchar(250),
-	participant_object_query text, -- the QueryByParameter segment of the query, base64 encoded
-	participant_object_detail varchar(500),
+	participant_object_name_enc bytea,
+	participant_object_query_enc bytea, -- the QueryByParameter segment of the query, base64 encoded
+	participant_object_detail_enc bytea,
 	last_modified_date timestamp without time zone default now() not null,
 	creation_date timestamp without time zone default now() not null,
 	CONSTRAINT audit_query_parameters_pk PRIMARY KEY (id),
