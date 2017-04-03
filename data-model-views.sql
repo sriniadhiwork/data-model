@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS pulse.patient_discovery_query_stats;
+--DROP VIEW IF EXISTS pulse.patient_discovery_query_stats;
 --CREATE OR REPLACE VIEW pulse.patient_discovery_query_stats AS
 --SELECT 
 --	loc.id as location_id,
