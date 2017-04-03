@@ -44,10 +44,10 @@ INSERT INTO pulse.name_assembly (code, description)
     VALUES('F', 'Prefix Family Middle Given Suffix'),
     ('G', 'Prefix Given Middle Family Suffix');
 
-INSERT INTO pulse.patient_gender (code, description)
-VALUES('F', 'Female'),
-('M', 'Male'),
-('UN', 'Undifferentiated');
+INSERT INTO pulse.patient_gender (code_enc, description_enc)
+VALUES(pgp_pub_encrypt('F', dearmor((SELECT * from public_key())::text)), pgp_pub_encrypt('Female', dearmor((SELECT * from public_key())::text))),
+(pgp_pub_encrypt('M', dearmor((SELECT * from public_key())::text)), pgp_pub_encrypt('Male', dearmor((SELECT * from public_key())::text))),
+(pgp_pub_encrypt('UN', dearmor((SELECT * from public_key())::text)), pgp_pub_encrypt('Undifferentiated', dearmor((SELECT * from public_key())::text)));
 
 INSERT INTO pulse.alternate_care_facility (identifier)
     VALUES
