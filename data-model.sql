@@ -234,7 +234,7 @@ ALTER TABLE audit_human_requestor OWNER TO pulse;
 
 CREATE TABLE audit_request_destination (
 	id bigserial NOT NULL,
-	user_id varchar(50), --SOAP endpoint URI
+	user_id varchar(255), --SOAP endpoint URI
 	alternative_user_id varchar(100),
 	user_name varchar(100),
 	user_is_requestor boolean default false,
@@ -613,6 +613,7 @@ CREATE TABLE patient_record (
 	ssn varchar(15),
 	patient_gender_id bigint not null,
 	location_patient_record_id varchar(1024),
+	home_community_id varchar(100),
 	phone_number varchar(100),
 	query_location_map_id bigint,
 	last_modified_date timestamp without time zone default now() not null,
@@ -657,6 +658,7 @@ CREATE TABLE patient_location_map (
     patient_id bigint not null,
     location_id bigint not null,
     location_patient_record_id varchar(1024) not null,
+    home_community_id varchar(100),
     documents_query_status_id bigint not null, 
     documents_query_start timestamp without time zone default now() not null,
     documents_query_end timestamp without time zone,
