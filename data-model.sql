@@ -231,7 +231,7 @@ ALTER TABLE audit_human_requestor OWNER TO pulse;
 
 CREATE TABLE audit_request_destination (
 	id bigserial NOT NULL,
-	user_id varchar(50), --SOAP endpoint URI
+	user_id varchar(255), --SOAP endpoint URI
 	alternative_user_id varchar(100),
 	user_name varchar(100),
 	user_is_requestor boolean default false,
@@ -622,6 +622,7 @@ CREATE TABLE patient_record (
 	dob_enc bytea,
 	ssn_enc bytea,
 	patient_gender_id bigint not null,
+	home_community_id varchar(100),
 	endpoint_patient_record_id varchar(1024),
 	phone_number_enc bytea,
 	query_endpoint_map_id bigint,
@@ -664,6 +665,7 @@ ALTER TABLE patient_record_address_line OWNER TO pulse;
 CREATE TABLE patient_endpoint_map (
     id bigserial not null,
     patient_id bigint not null,
+    home_community_id varchar(100),
     endpoint_id bigint not null,
     endpoint_patient_record_id varchar(1024) not null,
     documents_query_status_id bigint not null,
