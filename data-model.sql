@@ -440,6 +440,7 @@ CREATE TABLE endpoint (
 	external_id varchar(16) NOT NULL, -- the id we get from CTEN
 	endpoint_type_id bigint NOT NULL,
 	endpoint_status_id bigint NOT NULL,
+	managing_organization_name varchar(1024),
   	adapter character varying(128) NOT NULL, -- always eHealth?
 	payload_type varchar(512), -- HL7 CCDA Document
 	payload_mime_type varchar(128), -- application/xml
