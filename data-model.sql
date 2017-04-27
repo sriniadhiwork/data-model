@@ -368,6 +368,15 @@ ALTER TABLE audit_event_patient_map OWNER TO pulse;
 -- END Audit Tables
 --
 
+CREATE TABLE pulse_user (
+	id bigserial NOT NULL,
+	assertion text NOT NULL,
+	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+	creation_date timestamp without time zone NOT NULL DEFAULT now(),
+	CONSTRAINT pulse_user_pk PRIMARY KEY (id)
+);
+ALTER TABLE pulse_user OWNER TO pulse;
+
 CREATE TABLE location_status (
 	id bigserial NOT NULL,
 	name varchar(50) NOT NULL,
