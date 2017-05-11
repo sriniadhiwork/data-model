@@ -1,8 +1,8 @@
 INSERT INTO pulse.location_status (name)
-VALUES ('Active'), ('Off');
+VALUES ('Active'), ('Suspended'), ('Inactive');
 
 INSERT INTO pulse.endpoint_status (name)
-VALUES ('Active'), ('Off');
+VALUES ('Active'), ('Suspended'), ('Error'), ('Off'), ('Entered-in-error'), ('Test');
 
 INSERT INTO pulse.event_action_code (code , description)
     VALUES ('C', 'Create'), ('E', 'Execute');
@@ -44,10 +44,10 @@ INSERT INTO pulse.name_assembly (code, description)
     VALUES('F', 'Prefix Family Middle Given Suffix'),
     ('G', 'Prefix Given Middle Family Suffix');
 
-INSERT INTO pulse.patient_gender (code, description)
-VALUES('F', 'Female'),
-('M', 'Male'),
-('UN', 'Undifferentiated');
+INSERT INTO pulse.patient_gender (code_enc, description_enc)
+VALUES(pgp_pub_encrypt('F', dearmor((SELECT * from public_key())::text)), pgp_pub_encrypt('Female', dearmor((SELECT * from public_key())::text))),
+(pgp_pub_encrypt('M', dearmor((SELECT * from public_key())::text)), pgp_pub_encrypt('Male', dearmor((SELECT * from public_key())::text))),
+(pgp_pub_encrypt('UN', dearmor((SELECT * from public_key())::text)), pgp_pub_encrypt('Undifferentiated', dearmor((SELECT * from public_key())::text)));
 
 INSERT INTO pulse.alternate_care_facility (identifier)
     VALUES

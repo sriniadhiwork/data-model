@@ -14,5 +14,9 @@ psql -h $host -U $user -f data-model.sql pulse
 psql -h $host -U $user -f data-model.sql pulse_test
 psql -h $host -U $user -f data-model-views.sql pulse
 psql -h $host -U $user -f data-model-views.sql pulse_test
+if [ -f keys.sql ]; then
+    psql -h $host -U $user -f keys.sql pulse
+    psql -h $host -U $user -f keys.sql pulse_test
+fi
 psql -h $host -U $user -f preload.sql pulse
 psql -h $host -U $user -f preload.sql pulse_test
