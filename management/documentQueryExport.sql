@@ -65,8 +65,7 @@ audit_source.audit_source_type_code
 FROM pulse.audit_event event
 LEFT OUTER JOIN pulse.audit_request_source request_source ON event.audit_request_source_id = request_source.id
 LEFT OUTER JOIN pulse.audit_request_destination request_dest ON event.audit_request_destination_id = request_dest.id
-LEFT OUTER JOIN pulse.audit_event_human_requestor_map requestor_map ON event.id = requestor_map.audit_event_id
-LEFT OUTER JOIN pulse.audit_human_requestor requestor ON requestor.id = requestor_map.audit_human_requestor_id
+LEFT OUTER JOIN pulse.audit_human_requestor requestor ON requestor.audit_event_id = event.id
 LEFT OUTER JOIN pulse.audit_query_parameters query_params ON event.audit_query_parameters_id = query_params.id
 LEFT OUTER JOIN pulse.audit_event_patient_map patient_map ON event.id = patient_map.audit_event_id
 LEFT OUTER JOIN pulse.audit_patient patient ON patient.id = patient_map.audit_patient_id
