@@ -1,37 +1,33 @@
-﻿DO $$
-BEGIN
-raise notice 'ATNA Standard Event Audit Records';
-END; 
-$$;
-
-SELECT 
+CREATE TEMPORARY VIEW audit_document_query
+AS
+(SELECT 
 -- audit event fields
 event.id, event.event_id, event.event_action_code_id, event.event_date_time,
 event.event_outcome_indicator, event.event_type_code, 
 -- request source fields
-request_source.user_id as src_user_id,
-request_source.alternative_user_id as src_alternative_user_id,
-request_source.user_name as src_user_name,
-request_source.user_is_requestor as src_user_is_requestor,
-request_source.role_id_code as src_role_id_code,
-request_source.network_access_point_type_code_id as src_network_access_point_type_code_id,
-request_source.network_access_point_id as src_network_access_point_id,
+request_source.user_id as request_source_src_user_id,
+request_source.alternative_user_id as request_source_src_alternative_user_id,
+request_source.user_name as request_source_src_user_name,
+request_source.user_is_requestor as request_source_src_user_is_requestor,
+request_source.role_id_code as request_source_src_role_id_code,
+request_source.network_access_point_type_code_id as request_source_src_network_access_point_type_code_id,
+request_source.network_access_point_id as request_source_src_network_access_point_id,
 --request destination fields
-request_dest.user_id as src_user_id,
-request_dest.alternative_user_id as src_alternative_user_id,
-request_dest.user_name as src_user_name,
-request_dest.user_is_requestor as src_user_is_requestor,
-request_dest.role_id_code as src_role_id_code,
-request_dest.network_access_point_type_code_id as src_network_access_point_type_code_id,
-request_dest.network_access_point_id as src_network_access_point_id,
+request_dest.user_id as request_dest_src_user_id,
+request_dest.alternative_user_id as request_dest_src_alternative_user_id,
+request_dest.user_name as request_dest_src_user_name,
+request_dest.user_is_requestor as request_dest_src_user_is_requestor,
+request_dest.role_id_code as request_dest_src_role_id_code,
+request_dest.network_access_point_type_code_id as request_dest_src_network_access_point_type_code_id,
+request_dest.network_access_point_id as request_dest_src_network_access_point_id,
 -- who made the request
 requestor.user_id as requestor_user_id,
-requestor.alternative_user_id as src_alternative_user_id,
-requestor.user_name as src_user_name,
-requestor.user_is_requestor as src_user_is_requestor,
-requestor.role_id_code as src_role_id_code,
-requestor.network_access_point_type_code_id as src_network_access_point_type_code_id,
-requestor.network_access_point_id as src_network_access_point_id, 
+requestor.alternative_user_id as requestor_alternative_user_id,
+requestor.user_name as requestor_user_name,
+requestor.user_is_requestor as requestor_user_is_requestor,
+requestor.role_id_code as requestor_role_id_code,
+requestor.network_access_point_type_code_id as requestor_network_access_point_type_code_id,
+requestor.network_access_point_id as requestor_network_access_point_id, 
 -- what was in the request
 query_params.participant_object_type_code_id as queryparams_participant_object_type_code_id, 
 query_params.participant_object_type_code_role_id as queryparams_participant_object_type_code_role_id,
@@ -75,23 +71,9 @@ LEFT OUTER JOIN pulse.audit_event_patient_map patient_map ON event.id = patient_
 LEFT OUTER JOIN pulse.audit_patient patient ON patient.id = patient_map.audit_patient_id
 LEFT OUTER JOIN pulse.audit_document document ON event.id = document.audit_event_id
 LEFT OUTER JOIN pulse.audit_source ON event.audit_source_id = audit_source.id
-ORDER BY event.creation_date asc;
+WHERE event.event_type_code = 'EV("ITI-38", "IHE Transactions", and "Cross Gateway Query")'
+AND event.creation_date >= to_timestamp(:'startDate'||' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+AND event.creation_date <= to_timestamp(:'endDate'||' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+ORDER BY event.creation_date asc);
 
-
-DO $$
-BEGIN
-raise notice 'PULSE Internal Event Audit Records';
-END; 
-$$;
-
-SELECT 
-action.username,
-action_code.code,
-action_code.description,
-action.action_tstamp,
-pgp_pub_decrypt(action.action_json_enc, dearmor((SELECT * from private_key()))) as action_json
-FROM pulse.pulse_event_action action
-LEFT OUTER JOIN pulse.pulse_event_action_code action_code ON action.pulse_event_action_code_id = action_code.id
-ORDER BY action.creation_date asc;
-
-
+\copy (SELECT * from audit_document_query) TO 'document_query.csv' DELIMITER ',' CSV HEADER;
