@@ -1,6 +1,4 @@
-# Release Notes
+# Version 1.0.0
+_15 August 2017_
 
-## Version 0.0.1
-_Date TBD_
-
-First release
+## First release
