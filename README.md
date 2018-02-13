@@ -13,6 +13,20 @@ $ ./reset.sh
 $ ./fake.sh
 ```
 
+Note 1: reset.sh and fake.sh may not run till you complete the steps below due to dependencies on pgcrypto and public/private_key functions.
+
+Note 2. You could create a pgpassfile and set the environmentvariable PGPASSFILE as follows
+
+```
+localhost:*:pulse:pulse:pwd
+localhost:*:pulse_test:pulse:pwd
+```
+to avoid manually entering the password for each psql invoke in the script.
+
+Note 3. The .sh files can be translated to .bat files for running under DOS.
+
+
+
 # Encrypting PHI
 
 ## Install the pgcrypto Postgres Extension
